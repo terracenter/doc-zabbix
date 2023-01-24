@@ -158,12 +158,92 @@ Añadir proxies no es la tarea más difícil después de que ya hemos hecho la p
 El proxy que acabamos de agregar es un proxy pasivo. Estos proxies funcionan recibiendo configuración del servidor Zabbix, que el servidor Zabbix envía al proxy Zabbix en el puerto 10051:
 
 <p align = "center">
-   <img src = "(https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_005.jpg" alt="Figura 8.5 - Diagrama de la conexión proxy activa">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_005.jpg" alt="Figura 8.5 - Diagrama de la conexión proxy activa">
 </p>
 <p align = "center">Figura 8.5 - Diagrama de la conexión proxy activa</p>
 
 Una vez que el proxy pasivo sabe qué monitorizar, cada vez que el servidor Zabbix sondea en busca de datos, éstos se envían de vuelta en el mismo flujo TCP. Esto significa que la conexión siempre se inicia desde el lado del servidor Zabbix. Una vez configurado, el servidor Zabbix seguirá enviando cambios de configuración y seguirá sondeando para obtener nuevos datos.
 ***
+
+## Trabajando con proxies Zabbix activos
+Ahora sabemos cómo instalar y añadir proxies. Vamos a configurar nuestro proxy activo, como hicimos con el proxy pasivo en la receta anterior, y ver cómo funciona.
+
+### Preparación
+Necesitarás el host `lar-book-proxy-active` para esta receta, listo e instalado con el proxy Zabbix. También usaremos nuestro servidor Zabbix en esta receta.
+
+### Cómo hacerlo...
+1. Vamos a empezar por iniciar sesión en nuestro frontend Zabbix y navegar a Administración | Proxies:
+
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_006.jpg" alt="Figura 8.6 - Página Administración | Proxies, sin proxies activos">
+</p>
+<p align = "center">Figura 8.6 - Página Administración | Proxies, sin proxies activos</p>
+
+2. Nuestra página de Proxies es donde hacemos toda la configuración relacionada con los proxies.
+3. Vamos a añadir un nuevo proxy pulsando el botón azul Crear proxy en la esquina superior derecha.
+
+4. Esto nos llevará a la página Crear proxy, donde rellenaremos la siguiente información:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_007.jpg" alt="Figura 8.7 - Administración | Proxies, Página Crear proxy, lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.7 - Administración | Proxies, Página Crear proxy, lar-book-proxy-active</p>
+
+**Consejo**
+La dirección del Proxy es opcional para nuestro proxy activo. No es necesario añadirla para que el proxy Zabbix funcione, pero se recomienda para mantener las cosas claras. La adición de la dirección Proxy también funciona como una especie de lista blanca en este caso, ya que sólo la dirección IP en la lista se le permitirá conectarse.
+
+5. Antes de pulsar el botón azul Añadir, echemos un vistazo a la pestaña Cifrado:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_008.jpg" alt="Figura 8.8 - Administración | Proxies, página Crear cifrado de proxy, lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.8 - Administración | Proxies, página Crear cifrado de proxy, lar-book-proxy-active</p>
+
+6. Por defecto, No encryption está marcado aquí, lo que dejaremos así para esta receta.
+7. Ahora, haga clic en el botón azul Add, que nos llevará de vuelta a la página de resumen del proxy.
+8. Inicie sesión en la CLI y compruebe la configuración con el siguiente comando:
+```bash
+vim /etc/zabbix/zabbix_proxy.conf
+```
+
+9. Por defecto, la frecuencia con la que el proxy solicita cambios de configuración es de 3.600 segundos (es decir, 1 hora):
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_009.jpg" alt="Figura 8.9 - Fichero de configuración del proxy Zabbix, ConfigFrequency">
+</p>
+<p align = "center">Figura 8.9 - Fichero de configuración del proxy Zabbix, ConfigFrequency</p>
+
+**Sugerencia**
+Para proxies Zabbix activos, también es posible forzar al proxy Zabbix a solicitar datos de configuración al servidor Zabbix con `zabbix_proxy -R config_cache_reload`. Tenga en cuenta que esto no funcionará en un proxy Zabbix pasivo.
+
+10. La parte Last seen (age) de su proxy recién añadido debería mostrar ahora un valor de tiempo, en lugar de Never.
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_010.jpg" alt="Figura 8.10 - Página Administración | proxies, Última visita (edad)">
+</p>
+<p align = "center">Figura 8.10 - Página Administración | proxies, Última visita (edad)</p>
+
+Dependiendo de su configuración en el archivo de configuración del proxy, la parte Última vez visto (edad) puede tardar un poco en cambiar.
+
+**Nota importante**
+Sondear el servidor Zabbix para la configuración con demasiada frecuencia puede aumentar la carga, pero sondear con poca frecuencia dejará su proxy Zabbix esperando una nueva configuración. Elija la frecuencia que mejor se adapte a su entorno.
+
+### Cómo funciona...
+Si has seguido la receta Trabajar con proxies pasivos de Zabbix de este capítulo, los pasos son prácticamente los mismos, excepto la parte en la que añadimos el modo proxy y la parte en la que comprobamos el valor ConfigFrequency.
+
+El proxy que acabamos de añadir es un proxy activo que funciona solicitando una configuración al servidor Zabbix en el puerto 10051.
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_011.jpg" alt="Figura 8.11 - Diagrama de la conexión proxy activa">
+</p>
+<p align = "center">Figura 8.11 - Diagrama de la conexión proxy activa</p>
+
+El proxy Zabbix sigue solicitando cambios en la configuración, y sigue enviando los nuevos datos recogidos al servidor Zabbix cada segundo o envía un heartbeat si no hay datos disponibles.
+
+**Nota importante**
+Es recomendable utilizar proxies activos de Zabbix, ya que podemos utilizarlos para reducir la carga de nuestro servidor Zabbix. Utilice el proxy pasivo sólo cuando tenga una buena razón para hacerlo.
+***
+
+
+
+
+
+
 
 
 
