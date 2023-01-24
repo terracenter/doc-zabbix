@@ -425,7 +425,167 @@ El descubrimiento con un proxy Zabbix funciona exactamente igual que el descubri
 Si quieres aprender más sobre el proceso de descubrimiento y registro automático, consulta el [Capítulo 7](Pendiente), Uso del descubrimiento para la creación automática, si aún no lo has hecho.
 ***
 
+## Monitorización de sus proxies Zabbix
+Muchos usuarios de Zabix o incluso usuarios de monitorización en general olvidan una parte muy importante de su monitorización. Se olvidan de monitorizar la infraestructura de monitorización. Quiero asegurarme de que cuando configure proxies Zabbix, también sepa cómo monitorizar la salud de estos proxies.
+
+Vamos a ver cómo hacerlo en esta receta.
+
+### Preparándonos
+Para esta receta, necesitaremos nuestro nuevo proxy `lar-book-proxy-active` Zabbix. También necesitaremos nuestro servidor Zabbix para monitorizar el proxy Zabbix.
+
+### Cómo hacerlo...
+Vamos a construir algo de monitorización en nuestro frontend de Zabbix, pero también comprobaremos las opciones de monitorización integradas para los proxies de Zabbix. Empecemos por construir el nuestro.
+
+#### Monitorización del proxy con Zabbix
+Podemos monitorizar nuestro proxy Zabbix con el propio proxy Zabbix para asegurarnos de que sabemos exactamente lo que está pasando:
+
+1. Vamos a empezar por iniciar sesión en nuestro `lar-book-proxy-activo` Zabbix proxy CLI.
+2. Emita el siguiente comando para instalar el agente 2 de Zabbix para sistemas basados en RHEL:
+```bash
+dnf install zabbix-agent2
+```
+Para Ubuntu, ejecute este comando:
+```bash
+apt install zabbix-agent2
+```
+3. Edite el archivo de configuración del agente Zabbix mediante el siguiente comando:
+```bash
+vim /etc/zabbix/zabbix_agent2.conf
+```
+4. Edite las siguientes líneas para que apunten hacia `localhost`:
+```bash
+Server=127.0.0.1
+ServerActive=127.0.0.1
+```
+5. Además, asegúrese de añadir el nombre de host al archivo del agente de Zabbix:
+```bash
+Hostname=lar-book-proxy-active
+```
+6. Ahora, inicia sesión en el frontend de Zabbix y navega a Configuración | Hosts.
+7. Haz clic en el botón azul Crear host en la esquina superior derecha y añade el siguiente host:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_020.jpg" alt="Figura 8.20 - Configuración | Hosts, página Crear host, lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.20 - Configuración | Hosts, página Crear host, lar-book-proxy-active</p>
+
+8. Tenga especial cuidado en el campo **Monitorizado por proxy** queremos monitorizar desde el proxy porque estamos haciendo comprobaciones internas de Zabbix, que necesitan ser manejadas por el demonio de Zabbix que recibió esta configuración.
+9. Antes de pulsar el botón azul **Añadir**, asegúrese de añadir las Plantillas. Añada las siguientes plantillas al host:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_021.jpg" alt="Figura 8.21 - Configuración | Hosts, página Crear host Pestaña de plantillas para el host lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.21 - Configuración | Hosts, página Crear host Pestaña de plantillas para el host lar-book-proxy-active</p>
+
+10. Ahora podemos pulsar el botón azul **Añadir **para crear el host.
+11. Ahora, vaya a **Monitorización **| **Últimos datos** y añada los siguientes filtros:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_022.jpg" alt="Figura 8.22 - Monitorización | Página de últimos datos con filtros, host lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.22 - Monitorización | Página de últimos datos con filtros, host lar-book-proxy-active</p>
+
+Ahora podemos ver las estadísticas de nuestro proxy Zabbix, tales como Número de valores procesados por segundo y Utilización de los procesos internos del sincronizador de configuración:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_023.jpg" alt="Figura 8.23 - Monitorización | Página de últimos datos con datos de nuestro proxy Zabbix">
+</p>
+<p align = "center">Figura 8.23 - Monitorización | Página de últimos datos con datos de nuestro proxy Zabbix</p>
+
+### Monitorizando el proxy remotamente desde nuestro servidor Zabbix
+También podemos monitorizar nuestro proxy Zabbix remotamente desde nuestro servidor Zabbix, así que veamos cómo funciona:
+
+1. Vamos a empezar por iniciar sesión en nuestro lar-book-proxy-active host CLI y editar el siguiente archivo:
+```bash
+vim /etc/zabbix/zabbix_agent2.conf
+```
+2. Edite las siguientes líneas para que coincidan con la dirección de su servidor Zabbix (cada nodo en un clúster HA):
+```bash
+Server=127.0.0.1,10.16.16.152
+ServerActive=127.0.0.1,10.16.16.152
+```
+3.Además, edite el siguiente archivo:
+```bash
+vim /etc/zabbix/zabbix_proxy.conf
+```
+4.Edite la siguiente línea para que coincida con la dirección de su servidor Zabbix:
+```bash
+StatsAllowedIP=127.0.0.1,10.16.16.152
+```
+5. Ahora, navegue a la interfaz de Zabbix y vaya a Configuración | anfitriones _
+6. Haga clic en el botón azul Crear host en la esquina superior derecha y agregue el siguiente host
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_024.jpg" alt="Figura 8.24 – Configuración | Hosts, Crear página de host, lar-book-proxy-active_remotely">
+</p>
+<p align = "center">Figura 8.24 – Configuración | Hosts, Crear página de host, lar-book-proxy-active_remotely</p>
+
+7.Antes al hacer clic en el botón azul Agregar , asegúrese de agregar las Plantillas correctas . Agregue las siguientes plantillas al host:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_025.jpg" alt="Figura 8.25 – Configuración | Hosts, crear nueva página de host, pestaña Plantillas, lar-book-proxy-active_ de forma remota">
+</p>
+<p align = "center">Figura 8.25 – Configuración | Hosts, crear nueva página de host, pestaña Plantillas, lar-book-proxy-active_ de forma remota</p>
 
 
+8. Ahora podemos hacer clic en el botón azul Agregar para crear el host.
+9. De vuelta en Configuración | Hosts , haga clic en su nuevo lar-book-proxy-active_remotelyhost.
+10. Vaya a Macros y agregue las siguientes dos macros:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_026.jpg" alt="Figura 8.26 – Configuración | Hosts, Editar página de host, pestaña Macros, lar-book-proxy-active_remotely">
+</p>
+<p align = "center">Figura 8.26 – Configuración | Hosts, Editar página de host, pestaña Macros, lar-book-proxy-active_remote</p>
+
+11. Ahora, haga clic en el botón azul Actualizar , y eso es todo para este host.
+12. Navegar a Supervisión | Últimos datos y verifique los elementos para este host, podemos ver los datos que ingresan:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_027.jpg" alt="Figura 8.27 – Monitoreo | Última página de datos para host lar-book-proxy-active_remotel">
+</p>
+<p align = "center">Figura 8.27 – Monitoreo | Última página de datos para host lar-book-proxy-active_remotel</p>
 
 
+13. Monitoreo del proxy desde la interfaz de Zabbix
+14. Vamos a  Administración | cola
+15. Utilice el menú desplegable para ir a la descripción general de la cola por proxy:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_028.jpg" alt="Figura 8.28 - Menú desplegable de la página Administration | Queue">
+</p>
+<p align = "center">Figura 8.28 - Menú desplegable de la página Administration | Queue</p>
+
+Esto nos llevará a la página que se muestra en la siguiente captura de pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_029.jpg" alt="Figura 8.29 - Página Administración | Cola de espera">
+</p>
+<p align = "center">Figura 8.29 - Página Administración | Cola de espera</p>
+
+### Cómo funciona...Cómo funciona...
+Monitorizar sus proxies Zabbix es una tarea importante, por lo que necesitamos asegurarnos de que cada vez que añadimos un nuevo proxy Zabbix, estamos cuidando de él como lo haríamos con cualquier otro host.
+
+#### Monitorizando el proxy con Zabbix
+Al añadir el proxy Zabbix como un host, podemos asegurarnos de que el sistema Linux que está ejecutando nuestro proxy Zabbix es saludable. También nos aseguramos de que las aplicaciones del proxy Zabbix que se ejecutan en este servidor están en buen estado.
+
+Además de tener los disparadores adecuados en estas plantillas, también obtenemos un montón de opciones para solucionar problemas con el proxy Zabbix.
+
+El proxy Zabbix funciona igual que el servidor Zabbix cuando se trata de monitorización. Esto significa que al igual que con el servidor Zabbix, tenemos que mantener los proxies en gran salud ajustando el archivo de configuración del proxy Zabbix a nuestras necesidades.
+
+El escalado de sus proxies se vuelve mucho más fácil una vez que averiguar lo que está pasando con ellos. Por eso nos aseguramos de monitorizarlos siempre. Los monitorizamos desde el propio proxy para asegurarnos de que obtenemos la información correcta con las comprobaciones internas de Zabbix.
+
+#### Monitorizando el proxy remotamente desde nuestro servidor Zabbix
+Ahora, cuando monitorizamos con Remote Zabbix la salud del proxy, las cosas van un poco diferentes. En lugar de hacer nuestras comprobaciones desde el propio proxy Zabbix, las hacemos remotamente desde el servidor Zabbix definiendo la dirección y el puerto del proxy Zabbix en las macros. El tipo de comprobación interna de Zabbix se seguirá utilizando para esto, ejecutando las comprobaciones desde el servidor Zabbix al proxy Zabbix remotamente en este caso.
+
+Además de esto, por supuesto se sigue recomendando mantener nuestro agente Zabbix ejecutándose en modo pasivo o activo.
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_030.jpg" alt="Figura 8.30 - Agente Zabbix ejecutándose en el proxy Zabbix monitorizado por el servidor Zabbix">
+</p>
+<p align = "center">Figura 8.30 - Agente Zabbix ejecutándose en el proxy Zabbix monitorizado por el servidor Zabbix</p>
+
+De esta forma, nuestro servidor Zabbix es el que solicita y recibe información. Incluso cuando el proxy tenga problemas, las comprobaciones las seguirá haciendo el servidor Zabbix.
+
+Podemos utilizar esta plantilla como una forma de vigilar más de cerca nuestro proxy si sospechamos problemas con las comprobaciones internas que se realizan localmente, o podemos utilizar esta plantilla para eludir ciertas configuraciones de cortafuegos. Ambas son razones válidas.
+
+#### Monitorizando el proxy desde el frontend de Zabbix
+Desde el frontend, podemos usar la página Administration | Queue para monitorizar nuestros proxies. La página Zabbix Queue es una página importante, pero muchos de los nuevos usuarios no conocen ni utilizan completamente esta página.
+
+Cuando una parte de Zabbix empieza a funcionar mal, como nuestro proxy Zabbix de ejemplo aquí, es cuando podemos ver las cosas que pasan en la cola. Hay seis opciones en la cola de Zabbix:::
+- 5 segundos
+- 10 segundos
+- 30 segundos
+- 1 minuto
+- 5 minutos
+- Más de 10 minutos
+
+Lo que significan las opciones de la cola es que el proxy de Zabbix ha estado esperando a recibir un valor configurado más de lo esperado. Yo diría que hasta 1 minuto no tiene por qué ser un problema, pero esto depende del tipo de comprobación. Las opciones de 5 minutos o Más de 10 minutos pueden significar serios problemas de rendimiento con su proxy Zabbix, y usted tendría que solucionar este problema. Asegúrese de mantener un buen ojo en la cola de Zabbix cuando sospeche problemas, que también se incluyen como disparadores en las plantillas que hemos añadido para supervisar nuestros proxies Zabbix.
