@@ -339,7 +339,91 @@ Dmitry es un experimentado ingeniero de Zabbix y jefe de soporte al cliente de Z
 
 ***
 
+## Uso de la detección con proxies Zabbix
+En el [capítulo 7](Pendiente), Uso del descubrimiento para la creación automática, hablamos sobre Zabbix y el descubrimiento. Es una muy buena idea editar tus reglas de descubrimiento si seguiste ese capítulo. Veamos cómo funcionaría en esta receta.
 
+### Preparación
+Necesitará haber terminado el [capítulo 7](Pendiente), Uso de la detección para la creación automática, o tener configuradas algunas reglas de detección y autorregistro de agentes activos.
+
+En este ejemplo utilizaré los hosts `lar-book-lnx-agent-auto`, `lar-book-disc-lnx` y `lar-book-disc-win`. También necesitaremos nuestro servidor Zabbix.
+
+### Cómo hacerlo...
+Comencemos editando nuestra regla de descubrimiento y luego pasamos a editar nuestro agente activo para auto registrarse en el proxy.
+#### Reglas de descubrimiento
+Comenzando con las reglas de descubrimiento de Zabbix, vamos a ver cómo asegurarnos de que hacemos esto desde el proxy de Zabbix:
+
+1. Inicie sesión en la CLI de `lar-book-disc-lnx` y edite el archivo `/etc/zabbix/` ``zabbix_agent2.conf``. Edite las siguientes líneas para incluir nuestra dirección de proxy Zabbix:
+```bash
+Server=127.0.0.1,10.16.16.152,10.16.16.160,10.16.16.161
+ServerActive=10.16.16.160
+```
+2. Reinicie su agente Zabbix ejecutando el siguiente comando:
+```bash
+systemctl restart zabbix-agent2
+```
+3. Ahora, asegúrese de iniciar sesión en `lar-book-disc-win` y editar el archivo `C:\Program Files\Zabbix agent\zabbix_agent2`. Edite las siguientes líneas para incluir nuestra dirección proxy Zabbix:
+```bash
+Server=127.0.0.1,10.16.16.152,10.16.16.160,10.16.16.161
+ServerActive=10.16.16.160
+```
+**Nota importante**
+En las líneas `ServerActive` de nuestros ficheros de configuración, asegúrate de incluir sólo el proxy Zabbix al que queremos enviar datos. El agente Zabbix intentará activamente enviar datos a todos nuestros proxies Zabbix o servidores Zabbix listados aquí, por lo que sólo debemos listar el que queremos usar.
+
+4. Reinicie su agente Zabbix ejecutando los siguientes comandos en la línea de comandos de Windows:
+```bash
+zabbix_agent2.exe --stop
+zabbix_agent2.exe --start
+```
+5. A continuación, vaya a Configuración | Hosts y elimine los hosts descubiertos:
+```bash
+lar-book-disc-lnx
+lar-book-disc-win
+```
+Hacemos esto para evitar la duplicación de hosts.
+
+6. Ahora, navegue a Configuración | Descubrimiento.
+7. Haga clic en Discover Zabbix Agent hosts y cambie el campo Discovered by proxy, como se muestra en la siguiente captura de pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_017.jpg" alt="Figura 8.17 - Configuración | Acciones, menú desplegable para la detección por proxy lar-book-proxy-active">
+</p>
+<p align = "center">Figura 8.17 - Configuración | Acciones, menú desplegable para la detección por proxy lar-book-proxy-active</p>
+
+8. Pulse el botón azul Actualizar, y eso es todo lo que hay que hacer para editar su regla de descubrimiento para que sea monitorizada por un proxy.
+9. Ahora puede comprobar sus hosts recién descubiertos en Configuración | Hosts y ver que son monitorizados por el proxy:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_018.jpg" alt="Figura 8.18 - Pantalla Configuración | Hosts para hosts descubiertos">
+</p>
+<p align = "center">Figura 8.18 - Pantalla Configuración | Hosts para hosts descubiertos</p>
+
+#### Auto registro de agentes activos
+Pasando al auto registro activo de agentes, veamos cómo podemos hacerlo desde nuestro proxy Zabbix:
+
+1. Empezaremos navegando a Configuración | Hosts y borrando `lar-book-lnx- agent-auto`.
+2. Para hacer el auto registro de agente activo a un proxy, tenemos que entrar en el CLI de nuestro host `lar-book-lnx-agent-auto`.
+3.Edite el archivo de configuración del agente Zabbix con el siguiente comando:
+```bash
+vim /etc/zabbix/zabbix_agent2.conf
+```
+
+4. Asegúrese de editar la siguiente línea a la dirección del proxy Zabbix en lugar de la dirección del servidor Zabbix:
+```bash
+ServerActive=10.16.16.160
+```
+5. Reinicie el agente Zabbix:
+```bash
+systemctl restart zabbix-agent2
+```
+6. Ahora podemos ver nuestro host auto registrarse al proxy Zabbix en lugar de al servidor Zabbix:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_018.jpg" alt="Figura 8.19 - Pantalla Configuración | Hosts para nuestros dos hosts auto-registrados">
+</p>
+<p align = "center">Figura 8.19 - Pantalla Configuración | Hosts para nuestros dos hosts auto-registrados</p>
+
+## Cómo funciona...
+El descubrimiento con un proxy Zabbix funciona exactamente igual que el descubrimiento con un servidor Zabbix. Lo único que cambia es la ubicación de donde nos estamos registrando o descubriendo.
+
+Si quieres aprender más sobre el proceso de descubrimiento y registro automático, consulta el [Capítulo 7](Pendiente), Uso del descubrimiento para la creación automática, si aún no lo has hecho.
+***
 
 
 
