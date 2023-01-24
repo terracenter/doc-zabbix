@@ -239,7 +239,105 @@ El proxy Zabbix sigue solicitando cambios en la configuración, y sigue enviando
 Es recomendable utilizar proxies activos de Zabbix, ya que podemos utilizarlos para reducir la carga de nuestro servidor Zabbix. Utilice el proxy pasivo sólo cuando tenga una buena razón para hacerlo.
 ***
 
+## Monitorizando hosts con el proxy Zabbix
+Tenemos nuestros proxies Zabbix activo y pasivo listos para usar, así que ahora es el momento de añadir algunos hosts a ellos. Configurar el frontend de Zabbix para monitorizar hosts con proxies Zabbix funciona más o menos de la misma manera que monitorizar directamente desde el servidor Zabbix. Sin embargo, el backend y el diseño cambian completamente, lo que explicaré en la sección Cómo funciona... de esta receta.
 
+### Preparación
+Asegúrese de tener listos su proxy pasivo `lar-book-proxy-passive` y su proxy activo `lar-book-proxy-active` siguiendo todas las recetas anteriores de este capítulo.
+
+También necesitarás tu servidor Zabbix y al menos dos hosts para monitorizar. Usaremos `lar-book-agent_snmp` y `lar-book-agent` en el ejemplo, pero cualquier host con un agente Zabbix activo y pasivo funcionará.
+
+### Cómo hacerlo...
+Configuraremos un host tanto en nuestro proxy activo como en nuestro proxy pasivo para mostrarte cuál es la diferencia entre ambos. Empecemos con el proxy pasivo.
+
+#### Proxy pasivo
+1. Vamos a empezar esta receta iniciando sesión en nuestro frontend Zabbix y navegando a Configuración | Hosts.
+2. Añadimos el host con el agente pasivo a nuestro proxy pasivo. En mi caso, este es el host `lar-book-agent_snmp`.
+
+3. Haga clic en el host `lar-book-agent_snmp` y cambie el campo Monitorizado por proxy a `lar-book-proxy-passive`, como en la siguiente captura de pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_012.jpg" alt="Figura 8.12- Configuración | Hosts, página Editar host para el host lar-book-agent_snmp">
+</p>
+<p align = "center">Figura 8.12- Configuración | Hosts, página Editar host para el host lar-book-agent_snmp</p>
+
+4. Ahora, haga clic en el botón azul Actualizar. Nuestro host será ahora monitorizado por el proxy Zabbix.
+
+**Nota importante**
+Debido al intervalo de actualización de la configuración de 1 hora, podemos ver que el icono SNMP se vuelve gris temporalmente, y puede tardar hasta 1 hora antes de que la monitorización continúe. Sea paciente o fuerce una recarga de la caché de configuración tanto en el servidor Zabbix como en el proxy Zabbix.
+
+#### Proxy activo
+1. Hagamos lo mismo para nuestro otro host `lar-book-agent` navegando de nuevo a Configuración | Hosts.
+
+
+
+2. Haga clic en el host `lar-book-agent` y edite el campo Monitorizado por proxy a `lar-book-proxy-active`, como en la siguiente captura de pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_013.jpg" alt="Figura 8.13 - Configuración | Hosts, página Editar host para el host lar-book-agent">
+</p>
+<p align = "center">Figura 8.13 - Configuración | Hosts, página Editar host para el host lar-book-agent</p>
+
+3. Ahora, haga clic en el botón azul Actualizar.
+4. En la CLI de nuestro host Linux `lar-book-agent` monitorizado, ejecute el siguiente comando:
+```bash
+vim /etc/zabbix/zabbix_agent2.conf
+```
+
+5. Cuando trabajamos con un agente Zabbix activo necesitamos asegurarnos de añadir la dirección IP del proxy en la siguiente línea:
+```bash
+ServerActive=
+```
+
+Nuestro host será ahora monitorizado por el proxy Zabbix. Una vez más, esto puede tardar hasta una hora.
+
+### Cómo funciona...
+Monitorizar hosts con un proxy Zabbix en modo pasivo o activo funciona de la misma manera desde el frontend. Simplemente configuramos qué host es monitorizado por qué proxy en nuestro frontend de Zabbix, y listo.
+
+Veamos como nuestro agente SNMP (Simple Network Management Protocol) es ahora monitorizado por el proxy pasivo:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_014.jpg" alt="Figura 8.14 - Una configuración Zabbix completamente pasiva con proxy">
+</p>
+<p align = "center">Figura 8.14 - Una configuración Zabbix completamente pasiva con proxy</p>
+
+Nuestro proxy Zabbix pasivo ahora recoge los datos de nuestro agente SNMP, y después de esto, el servidor Zabbix recoge estos datos de nuestro proxy Zabbix. Ya suena como todo un proceso, ¿verdad?
+
+Veamos la configuración de nuestro proxy Zabbix activo:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_015.jpg" alt="Figura 8.15 - Una configuración de Zabbix completamente activa con proxy">
+</p>
+<p align = "center">Figura 8.15 - Una configuración de Zabbix completamente activa con proxy</p>
+
+Nuestro proxy Zabbix activo recibe datos de nuestro agente Zabbix activo y luego envía estos datos a nuestro servidor Zabbix. Hemos eliminado todos los temporizadores en esta configuración de proxy por completo y ahora estamos recibiendo todos nuestros datos en el servidor Zabbix tan pronto como esté disponible.
+
+Esta es la razón por la que siempre recomiendo trabajar con proxies activos -e incluso agentes activos- tanto como sea posible. Si nos fijamos en la siguiente captura de pantalla, podemos ver una configuración que se podría ver en una empresa:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_016.jpg" alt="Figura 8.16 - Configuración de un proxy Zabbix activo con diferentes tipos monitorizados">
+</p>
+<p align = "center">Figura 8.16 - Configuración de un proxy Zabbix activo con diferentes tipos monitorizados</p>
+
+Afortunadamente, tenemos la opción de utilizar un montón de diferentes combinaciones de configuraciones. Es perfectamente posible -e incluso lógico- combinar sus comprobaciones desde un proxy, tanto como lo sería con un servidor Zabbix. Podemos monitorizar todos los tipos desde nuestro proxy, ya sea un agente Zabbix, SNMP, o incluso Java Management Extensions (JMX) y la Intelligent Platform Management Interface (IPMI).
+
+**Sugerencia**
+Al diseñar una nueva infraestructura de alojamiento Zabbix, comience con la adición de proxies si es posible. De esta manera, usted no tiene que cambiar mucho más tarde. Es fácil añadir y cambiar proxies, pero es más difícil pasar de sólo usar el servidor Zabbix a usar proxies Zabbix en su diseño.
+
+### Hay más...
+Ahora tenemos una configuración sólida con algunos proxies en funcionamiento. Hemos entendido la diferencia entre proxies activos y pasivos y cómo afectan a la monitorización. Pero, ¿por qué construir una configuración como esta? Bueno, los proxies Zabbix son geniales para muchos entornos - no sólo los grandes, sino incluso a veces en los más pequeños.
+
+Podemos utilizar proxies Zabbix para descargar el sondeo y el preprocesamiento de nuestro servidor Zabbix principal, manteniendo así el servidor libre para el manejo de datos como cuando se escribe en la base de datos Zabbix.
+
+Podemos usar proxies Zabbix para monitorizar ubicaciones externas, como cuando eres un Proveedor de Servicios Gestionados (MSP) y quieres monitorizar una gran red de clientes. Simplemente colocamos un proxy in situ y lo monitorizamos. Podemos utilizar técnicas estándar de la industria como el monitoreo a través de una red privada virtual (VPN) o simplemente establecer una conexión utilizando el cifrado de proxy Zabbix incorporado.
+
+Cuando la VPN se caiga, nuestro proxy seguirá recopilando datos in situ y los enviará a nuestro servidor Zabbix cuando la VPN vuelva a funcionar.
+
+También podemos utilizar el proxy Zabbix para eludir las complicaciones del cortafuegos. Cuando colocamos un proxy detrás de un cortafuegos en una red monitorizada, sólo necesitamos una regla de cortafuegos entre el servidor Zabbix y el proxy Zabbix. Nuestro proxy Zabbix entonces monitorea los diferentes hosts y envía los datos recogidos en un flujo al servidor Zabbix.
+
+Con esto, ya tienes un montón de opciones para utilizar proxies Zabbix.
+
+### Ver también
+Echa un vistazo a esta interesante entrada del blog de Dmitry Lambert sobre algunas ventajas ocultas de los proxies Zabbix: https://blog.zabbix.com/hidden-benefits-of-zabbix-proxy/9359/.
+
+Dmitry es un experimentado ingeniero de Zabbix y jefe de soporte al cliente de Zabbix. Sus entradas en el blog son fáciles de entender y proporcionan algunos nuevos ángulos desde los que mirar a Zabbix.
+
+***
 
 
 
