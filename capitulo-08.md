@@ -113,3 +113,57 @@ https://www.zabbix.com/documentation/current/manual/installation/install_from_pa
 
 Elige la distribución que estés utilizando, y podrás encontrar las guías para todas las diferentes variantes de instalación de proxy.
 ***
+
+## Trabajando con proxies Zabbix pasivos
+Ahora que hemos instalado nuestro proxy Zabbix en la receta anterior, podemos empezar a trabajar con él. Empecemos configurando nuestro proxy pasivo Zabbix en el frontend y veamos qué podemos hacer con él desde el principio.
+
+### Preparación
+Necesitarás el host `lar-book-proxy-passive` para esta receta listo e instalado con el proxy Zabbix. También volveremos a utilizar nuestro servidor Zabbix en esta receta.
+
+### Cómo hacerlo...
+1. Vamos a empezar por iniciar sesión en nuestro frontend Zabbix y navegar a **Administración **| **Proxies**:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_001.jpg" alt="Figura 8.1 - Página Administración | Proxies, sin proxies pasivos">
+</p>
+<p align = "center"> Figura 8.1 - Página Administración | Proxies, sin proxies pasivos </p>
+
+2. Vamos a añadir un nuevo proxy con el botón azul Crear proxy en la esquina superior derecha.
+
+3. Esto nos llevará a la página Crear proxy, donde rellenaremos la siguiente información:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_002.jpg" alt="Figura 8.2 - Administración | Proxies, página Crear proxy, lar-book-proxy-passive">
+</p>
+<p align = "center"> Figura 8.2 - Administración | Proxies, página Crear proxy, lar-book-proxy-passive </p>
+
+4. Antes de pulsar el botón azul Añadir, echemos un vistazo a la pestaña Cifrado:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_003.jpg" alt="Figura 8.3 - Administración | Proxies, página Crear cifrado de proxy, lar-book-proxy-passive">
+</p>
+<p align = "center"> Figura 8.3 - Administración | Proxies, página Crear cifrado de proxy, lar-book-proxy-passive</p>
+
+5. Por defecto, No encryption está marcado aquí, lo que dejaremos así para esta receta.
+**Nota importante**
+Mucha información valiosa se intercambia entre los servidores Zabbix y los proxies Zabbix. Si estás trabajando con redes inseguras o simplemente necesitas una capa extra de seguridad, utiliza el cifrado de proxy Zabbix. Puedes encontrar más información sobre el cifrado de Zabbix aquí: https://www.zabbix.com/documentation/current/en/manual/encryption
+
+6. Ahora, haga clic en el botón azul Añadir, que nos llevará de nuevo a nuestra página de resumen de proxy.
+7. La parte Última vez visto (edad) de su proxy recién añadido ahora debe mostrar un valor de tiempo, en lugar de Nunca:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_004.jpg" alt="Figura 8.4 - Página Administración | Proxies, Última visita (edad)">
+</p>
+<p align = "center">Figura 8.4 - Página Administración | Proxies, Última visita (edad)</p>
+
+### Cómo funciona...
+Añadir proxies no es la tarea más difícil después de que ya hemos hecho la parte de instalación. Después de los pasos que dimos en esta receta, estamos listos para empezar a monitorear con este proxy.
+
+El proxy que acabamos de agregar es un proxy pasivo. Estos proxies funcionan recibiendo configuración del servidor Zabbix, que el servidor Zabbix envía al proxy Zabbix en el puerto 10051:
+
+<p align = "center">
+   <img src = "(https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_08_005.jpg" alt="Figura 8.5 - Diagrama de la conexión proxy activa">
+</p>
+<p align = "center">Figura 8.5 - Diagrama de la conexión proxy activa</p>
+
+Una vez que el proxy pasivo sabe qué monitorizar, cada vez que el servidor Zabbix sondea en busca de datos, éstos se envían de vuelta en el mismo flujo TCP. Esto significa que la conexión siempre se inicia desde el lado del servidor Zabbix. Una vez configurado, el servidor Zabbix seguirá enviando cambios de configuración y seguirá sondeando para obtener nuevos datos.
+***
+
+
+
