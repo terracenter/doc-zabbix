@@ -250,9 +250,126 @@ Cuando haya terminado, terminará con lo siguiente:
 - `e_buy`: Un usuario con acceso a los permisos del grupo de usuarios **Compras e Inventario** y que tiene el rol `Usuario` o el `rol Usuario`.
 
 ------------
+## Autenticación avanzada de usuarios con SAML
+En esta receta, vamos a utilizar la autenticación SAML, una forma de autenticación ampliamente utilizada en el mundo de TI. La utilizaremos como forma de gestionar las contraseñas de nuestros usuarios de Zabbix. Ten en cuenta que si has trabajado antes con Zabbix y has configurado LDAP, SAML, al igual que LDAP, permite la autenticación de usuarios con contraseñas. De todas formas hay que crear usuarios con sus permisos.
 
+### Preparándose
+Para empezar con la autenticación SAML, necesitaremos nuestro servidor Zabbix configurado de la receta anterior. Es importante que tengamos todos los usuarios configurados de la receta anterior. También necesitaremos algo para autenticar con SAML. Vamos a utilizar **Azure Active Directory (AD) SAML**.
 
+Asegúrese de configurar los usuarios en su (Azure) AD antes de continuar con esta receta. Puede utilizar sus usuarios AD existentes para la autenticación, por lo que puede utilizar esta receta con su configuración AD existente.
 
+Usaremos el usuario `s_network` como ejemplo:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_024.jpg" alt="Figura 2.24 - Ventana Usuarios y grupos de Azure">
+   Figura 2.24 - Ventana Usuarios y grupos de Azure
+</p>
 
+Estos son los detalles de nuestro usuario:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_025.jpg" alt="Figura 2.25 - Ventana de detalles del usuario Azure">
+   Figura 2.25 - Ventana de detalles del usuario Azure
+</p>
 
+Para configurar SAML, recupera la configuración SAML de tu AD o de otro proveedor SAML. Para trabajar con Zabbix, necesitaremos lo siguiente:
+- ID de entidad IdP
+- URL del servicio SSO
+- URL del servicio SLO
+- Atributo de nombre de usuario
+- ID de entidad SP
+- Nombre SP Formato ID
 
+### Cómo hacerlo...
+Ahora que tenemos nuestro Azure AD listo, vamos a ver cómo podemos configurar SAML utilizando nuestra configuración:
+1. Naveguemos a la siguiente URL: `portal.azure.com`.
+2. Después de iniciar sesión, navegue a Azure AD y haga clic en** Enterprise Applications**.
+3. Ahora haga clic en + **Nueva aplicación** para crear nuestra nueva aplicación. En la siguiente ventana, haga clic en **Crear su propia aplicación**:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_026.jpg" alt="Figura 2.26 - Página de creación de aplicaciones empresariales Azure">
+  Figura 2.26 - Página de creación de aplicaciones empresariales Azure
+</p>
+
+4. En la siguiente ventana, nombra tu nueva aplicación Zabbix y haz clic en el botón azul Crear:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_027.jpg" alt="Figura 2.27 - Página de nueva aplicación Azure enterprise">
+   Figura 2.27 - Página de nueva aplicación Azure enterprise
+</p>
+
+5. Seleccione su nueva aplicación de la lista y haga clic en Asignar usuarios y grupos para añadir los usuarios correctos. En nuestro caso, este será s_network:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_028.jpg" alt="Figura 2.28 - Página Usuarios y Grupos de la aplicación Azure enterprise">
+   Figura 2.28 - Página Usuarios y Grupos de la aplicación Azure enterprise
+</p>
+
+6. Haga clic en **Seleccionar** y luego en **Asignar**.
+7. Ahora pasemos a la configuración de SAML haciendo clic en **Single sign-on** en la barra lateral.
+8. Ahora haga clic en **SAML** en la página que se muestra en la siguiente captura de pantalla y continúe:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_029.jpg" alt="Figura 2.29 - Opción SAML de la aplicación empresarial Azure">
+   Figura 2.29 - Opción SAML de la aplicación empresarial Azure
+</p>
+
+9. Ahora en 1, podemos añadir la siguiente información, donde las marcas negras son la URL de nuestro servidor Zabbix:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_030.jpg" alt="Figura 2.30 - Configuración SAML de Azure 1">
+   Figura 2.30 - Configuración SAML de Azure 1
+</p>
+
+10. En 2, rellene lo siguiente:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_031.jpg" alt="Figura 2.31 - Configuración SAML de Azure 2">
+   Figura 2.31 - Configuración SAML de Azure 2
+</p>
+
+11. El número 3 se rellenará automáticamente. Haga clic en Descargar para Certificado (Base64):
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_032.jpg" alt="Figura 2.32 - Configuración de SAML en Azure 3">
+   Figura 2.32 - Configuración de SAML en Azure 3
+</p>
+
+12. Inicie sesión en el CLI del servidor Zabbix y cree un nuevo archivo con el siguiente comando:
+```bash
+vim /usr/share/zabbix/conf/certs/idp.cert
+```
+13. Pegue aquí el contenido del archivo descargado en el paso 11 y guarde el archivo.
+14. Ahora de vuelta en Azure para 4, obtendremos la siguiente información:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_033.jpg" alt="Figura 2.33 - Configuración de SAML en Azure 4">
+   Figura 2.33 - Configuración de SAML en Azure 4
+</p>
+
+15. En el frontend de Zabbix, ve a la página **Administration** | **Authentication** | **SAML** settings y rellena la siguiente información y haz click en Update:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_034.jpg" alt="Figura 2.34 - Configuración SAML de Zabbix">
+   Figura 2.34 - Configuración SAML de Zabbix
+</p>
+16. Navegue a **Administración** | **Usuarios** y cambie el usuario `s_network` para incluir el dominio Azure utilizado, por ejemplo:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_035.jpg" alt="Figura 2.35 - Pantalla de edición de usuarios de Zabbix para nuestra configuración SAML">
+   Figura 2.35 - Pantalla de edición de usuarios de Zabbix para nuestra configuración SAML
+</p>
+
+17. Después de seguir estos pasos, ahora debería ser posible iniciar sesión con el usuario configurado en Zabbix y utilizar la contraseña establecida en Azure AD para ello:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_036.jpg" alt="Figura 2.36 - Ventana de acceso a Zabbix">
+   Figura 2.36 - Ventana de acceso a Zabbix
+</p>
+
+### Cómo funciona...
+La autenticación avanzada de usuarios de Zabbix se utiliza para centralizar la gestión de contraseñas. Aunque en realidad no podemos asignar grupos de usuarios y permisos a los usuarios a través de esta configuración, podemos utilizarlo para la gestión de contraseñas.
+
+De esta manera, podemos asegurarnos de que es más fácil para los usuarios mantener sus contraseñas centralizadas en entornos de oficinas medianas y grandes:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_037.jpg" alt="Figura 2.37 - Diagrama de autenticación SAML de Zabbix">
+   Figura 2.37 - Diagrama de autenticación SAML de Zabbix
+</p>
+
+Zabbix se comunica con nuestro componente SAML de Azure AD cuando pulsamos el botón Sign in. El usuario es entonces autenticado contra su usuario de Azure AD y una confirmación es enviada de vuelta al servidor Zabbix. Enhorabuena, ¡ya has iniciado sesión en tu servidor Zabbix!
+
+### Hay más...
+Podemos hacer este tipo de autenticación no sólo con SAML, sino también con HTTP y LDAP. De esta manera, usted puede elegir la forma correcta de autenticación avanzada para su organización.
+
+Echa un vistazo a la documentación de Zabbix para obtener más información sobre las diferentes formas de autenticación:
+
+https://www.zabbix.com/documentation/current/en/manual/web_interface/frontend_sections/administration/authentication
+
+También es posible trabajar con un proveedor de identidad como Okta, OneLogin, o cualquier otro. Lo que significa que tus opciones no están limitadas a Azure AD, siempre y cuando soporte SAML puedes usarlo para autenticar contra tu servidor Zabbix.
