@@ -176,6 +176,83 @@ Esto, por supuesto, es sólo uno de los muchos tipos de configuraciones que pued
 ### Hay más...
 Zabbix se encuentra actualmente en el proceso de elaboración de los roles de usuario, lo que significa que algunas partes todavía pueden faltar o puede ver problemas con ellos. Como es una nueva característica, está siendo constantemente mejorada y ampliada. Consulta la documentación de Zabbix para más información sobre esta característica: https://www.zabbix.com/documentation/current/en/manual/web_interface/frontend_sections/administration/user_roles.
 
+------------
+## Creando tus primeros usuarios
+Con nuestros grupos de usuarios recién creados, hemos dado nuestro primer paso hacia una configuración de Zabbix más estructurada y segura. El siguiente paso es asignar realmente algunos usuarios a los grupos de usuarios recién creados para asegurarnos de que se les asignan nuestros nuevos permisos de usuario del grupo.
+### Preparación
+Para empezar, necesitaremos el servidor y los grupos de usuarios recién creados en la última receta. Así que, comencemos la configuración.
+
+Ahora sabemos que hay tres departamentos en la empresa llamada Cloud Hoster que van a utilizar nuestra instalación Zabbix. Hemos creado grupos de host para ellos, pero también hay usuarios en esos departamentos que realmente quieren utilizar nuestra instalación. Vamos a conocerlos:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_015.jpg" alt="Figura 2.15 - Diagrama de usuarios de Cloud Hoster">
+</p>
+<p align = "center">Figura 2.15 - Diagrama de usuarios de Cloud Hoster</p>
+
+Estos son los usuarios que necesitamos configurar para que Cloud Hoster los utilice.
+### Cómo hacerlo...
+Empecemos a crear los usuarios. Empezaremos con nuestro departamento de Redes:
+1. Navegue a Administración | Usuarios, que le llevará a esta página:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_016.jpg" alt="Figura 2.16 - Ventana Usuarios de Zabbix">
+</p>
+<p align = "center">Figura 2.16 - Ventana Usuarios de Zabbix</p>
+
+2. Aquí es donde ocurre toda la magia de la creación de usuarios, ya que estaremos administrando todos nuestros usuarios desde esta página. Para crear nuestro primer usuario del departamento de **Redes** llamado `s_network`, haga clic en el botón **Crear usuario** en la esquina superior derecha, lo que nos llevará a la siguiente pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_017.jpg" alt="Figura 2.17 - Ventana de configuración de Usuarios de Zabbix">
+</p>
+<p align = "center">Figura 2.17 - Ventana de configuración de Usuarios de Zabbix</p>
+3. Rellena **Username** para proporcionarnos el nombre de usuario que utilizará este usuario, que será `s_network`.
+4. Además, es importante añadir este usuario al grupo que acabamos de crear para darle a nuestro usuario los permisos adecuados. Haga clic en **Seleccionar** y elija nuestro grupo llamado Networking.
+5. Por último, pero no menos importante, establece una **contraseña** segura en los campos Contraseña; no la olvides porque la utilizaremos más adelante.
+6. Después de esto, pasa a la pestaña **Permisos**, ya que no vamos a configurar los medios de comunicación todavía:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_018.jpg" alt="Figura 2.18 - Ventana de configuración de permisos de usuario de Zabbix">
+</p>
+<p align = "center">Figura 2.18 - Ventana de configuración de permisos de usuario de Zabbix</p>
+
+7. Seleccione aquí la opción Rol denominada Rol de superadministrador. Esto permitirá a nuestro usuario acceder a todos los elementos de la interfaz de usuario y ver y editar información sobre todos los grupos de hosts en el servidor Zabbix.
+Los siguientes roles de usuario están disponibles en Zabbix por defecto:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_019_new.jpg" alt="Figura 2.19 - Tabla que detalla los diferentes roles de usuario de Zabbix">
+</p>
+<p align = "center">Figura 2.19 - Tabla que detalla los diferentes roles de usuario de Zabbix</p>
+8. Repitamos los pasos anteriores para el usuario llamado `y_network` pero en la pestaña Permissions, seleccionemos la opción Admin role de la siguiente manera:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_020.jpg" alt="Figura 2.20 - Ventana de configuración de permisos de usuario de Zabbix">
+</p>
+<p align = "center">Figura 2.20 - Ventana de configuración de permisos de usuario de Zabbix</p>
+Después de crear estos dos usuarios, pasemos a crear el usuario de infraestructura, `r_infra`. Repite los pasos que dimos para `s_network`, cambiando el nombre de usuario, por supuesto. Después, añade este usuario al grupo y dale a nuestro usuario los permisos adecuados. Haga clic en Seleccionar y elija nuestro grupo llamado Infraestructura. Se verá así:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_021.jpg" alt="Figura 2.21 - Ventana de configuración de usuario de Zabbix para r_infra">
+</p>
+<p align = "center">Figura 2.21 - Ventana de configuración de usuario de Zabbix para r_infra</p>
+Por último, haga de este usuario otro **Super admin**.
+
+9. Ahora, para nuestro último usuario, vamos a repetir nuestros pasos de nuevo, cambiando el Nombre de Usuario y el grupo en la pestaña Usuario de la siguiente manera:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_022.jpg" alt="Figura 2.22 - Ventana de configuración de Zabbix User para e_buy">
+</p>
+<p align = "center">Figura 2.22 - Ventana de configuración de Zabbix User para e_buy</p>
+
+10. Si no has seguido la receta anterior, puedes cambiar el Rol de este usuario por el de Usuario en la pestaña Permisos. Pero si seguiste la receta anterior, podemos usar el rol Usuario+ que creamos así:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_02_023.jpg" alt="Figura 2.23 - Ventana de configuración de usuarios de Zabbix para e_buy">
+</p>
+<p align = "center">Figura 2.23 - Ventana de configuración de usuarios de Zabbix para e_buy</p>
+
+Configurar el usuario con el `rol Usuario` también permitirá al usuario `e_buy` crear periodos de mantenimiento.
+
+Cuando haya terminado, terminará con lo siguiente:
+- `s_red`: Un usuario con acceso a los permisos del grupo de usuarios **Networking** y que tiene el rol **Super admin**.
+- `y_network`: Un usuario con acceso a los permisos del grupo de usuarios Networking y que tiene el rol **Admin**.
+- `r_infra`: Un usuario con acceso a los permisos del grupo de usuarios **Infraestructura** y que tiene el rol de** Super admin**.
+- `e_buy`: Un usuario con acceso a los permisos del grupo de usuarios **Compras e Inventario** y que tiene el rol `Usuario` o el `rol Usuario`.
+
+------------
+
+
+
 
 
 
