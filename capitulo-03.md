@@ -58,7 +58,6 @@ https://www.zabbix.com/download
 #### Uso de un agente Zabbix en modo pasivo
 Empecemos construyendo un agente Zabbix con comprobaciones pasivas:
 
-Después de instalar el agente 2 de Zabbix, vamos a abrir el fichero de configuración del agente Zabbix para editarlo:
 1. Después de instalar el agente 2 de Zabbix, vamos a abrir el fichero de configuración del agente Zabbix para editarlo:
 ```bash
 vim /etc/zabbix/zabbix_agent2.conf
@@ -89,9 +88,13 @@ systemctl restart zabbix-agent2
 7. Para crear este host en nuestro servidor Zabbix, tenemos que rellenar los valores como se ve en la siguiente captura de pantalla
 <p align = "center">
    <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_001.jpg" alt=" Figura 3.1 - Página de creación de host Zabbix para el host lar-book-agent">
-   Figura 3.1 - Página de creación de host Zabbix para el host lar-book-agent
+</p>   
+<p align = "center">
+Figura 3.1 - Página de creación de host Zabbix para el host lar-book-agent   
 </p>
+
 **Es importante añadir lo siguiente**
+
  - **Nombre del Host**: Para identificar este host
  -  **Grupos**: Para agrupar hosts de forma lógica
  - **Interfaces**: Para supervisar este host en una interfaz específica. Sin interfaz no hay comunicación. Es posible tener un host sin interfaz en Zabbix 6, si no lo necesitamos. En el caso de un host monitorizado por un agente Zabbix, necesitamos una interfaz de agente.
@@ -100,21 +103,21 @@ systemctl restart zabbix-agent2
 9. También es importante añadir una plantilla a este host, que con Zabbix 6 debe hacerse en la misma pestaña. Como se trata de un servidor Linux monitorizado por un agente Zabbix, vamos a añadir la plantilla out-of-the-box correcta, como se muestra en la siguiente captura de pantalla:
 <p align = "center">
    <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_002.jpg" alt="Figura 3.2 - Página de plantilla de host Zabbix para el host lar-book-agent">
+</p>   
+<p align = "center">  
    Figura 3.2 - Página de plantilla de host Zabbix para el host lar-book-agent
 </p>
 10. Pulsa el botón azul Añadir y habrás terminado de crear este host agente. Ahora que tienes este host, asegúrate de que el icono ZBX se vuelve verde, indicando que este host está activo y siendo monitorizado por el agente pasivo de Zabbix:
 <p align = "center">
    <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_003.jpg" alt="Figura 3.3 - Página de configuración de hosts de Zabbix, host lar-book-agent">
-   Figura 3.3 - Página de configuración de hosts de Zabbix, host lar-book-agent
+</p>   
+<p align = "center">
+  Figura 3.3 - Página de configuración de hosts de Zabbix, host lar-book-agent
 </p>
 11. Como hemos configurado nuestro host y añadido una plantilla con ítems, ahora podemos ver los valores recibidos en los ítems para este host yendo a **Monitorización** | **Hosts** y marcando el botón **Últimos datos**. Tenga en cuenta que los valores pueden tardar un poco en aparecer:
 <p align = "center">
    <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_004.jpg" alt="Figura 3.4 - Página de últimos datos de Zabbix para el host lar-book-agent">
+<p>
+<p align = "center">  
    Figura 3.4 - Página de últimos datos de Zabbix para el host lar-book-agent
 </p>
-    
-
-
-
-
-
