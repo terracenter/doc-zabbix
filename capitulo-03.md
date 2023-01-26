@@ -50,7 +50,8 @@ apt install zabbix-agent2
 ```
 Enhorabuena, el agente 2 de Zabbix ya está instalado y listo para usar.
 
-**Nota importante**
+**Nota importante** 
+</br>
 Cuando añadas nuevos repositorios a tu sistema, consulta siempre la página de descargas de Zabbix. Aquí podemos encontrar el repositorio actualizado adecuado para nuestro sistema:
 https://www.zabbix.com/download
 
@@ -58,6 +59,61 @@ https://www.zabbix.com/download
 Empecemos construyendo un agente Zabbix con comprobaciones pasivas:
 
 Después de instalar el agente 2 de Zabbix, vamos a abrir el fichero de configuración del agente Zabbix para editarlo:
+1. Después de instalar el agente 2 de Zabbix, vamos a abrir el fichero de configuración del agente Zabbix para editarlo:
+```bash
+vim /etc/zabbix/zabbix_agent2.conf
+```
+En este archivo, editamos todos los valores de configuración del agente Zabbix que podríamos necesitar desde el lado del servidor.
+
+3. Empecemos por editar los siguientes parámetros
+```bash
+Server=127.0.0.1
+Hostname=Zabbix server
+```
+
+3. Cambie el valor de Server por la IP del servidor Zabbix que monitorizará este agente pasivo. Cambiar el valor de Hostname por el nombre de host del servidor monitorizado. Podemos obtener la dirección IP de nuestro servidor con el siguiente comando:
+```bash
+ip addr
+```
+
+4.  Ahora reinicie el proceso del agente 2 de Zabbix:
+```bash
+systemctl enable zabbix-agent2
+systemctl restart zabbix-agent2
+```
+
+5. A continuación, vaya al frontend de su servidor Zabbix y añada este host para su monitorización.
+
+6. Vaya a Configuración | Hosts en su frontend Zabbix y haga clic en Crear host en la esquina superior derecha.
+
+7. Para crear este host en nuestro servidor Zabbix, tenemos que rellenar los valores como se ve en la siguiente captura de pantalla
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_001.jpg" alt=" Figura 3.1 - Página de creación de host Zabbix para el host lar-book-agent">
+   Figura 3.1 - Página de creación de host Zabbix para el host lar-book-agent
+</p>
+**Es importante añadir lo siguiente**
+ - **Nombre del Host**: Para identificar este host
+ -  **Grupos**: Para agrupar hosts de forma lógica
+ - **Interfaces**: Para supervisar este host en una interfaz específica. Sin interfaz no hay comunicación. Es posible tener un host sin interfaz en Zabbix 6, si no lo necesitamos. En el caso de un host monitorizado por un agente Zabbix, necesitamos una interfaz de agente.
+
+8. Asegúrese de añadir la dirección IP correcta a la configuración de la interfaz del agente.
+9. También es importante añadir una plantilla a este host, que con Zabbix 6 debe hacerse en la misma pestaña. Como se trata de un servidor Linux monitorizado por un agente Zabbix, vamos a añadir la plantilla out-of-the-box correcta, como se muestra en la siguiente captura de pantalla:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_002.jpg" alt="Figura 3.2 - Página de plantilla de host Zabbix para el host lar-book-agent">
+   Figura 3.2 - Página de plantilla de host Zabbix para el host lar-book-agent
+</p>
+10. Pulsa el botón azul Añadir y habrás terminado de crear este host agente. Ahora que tienes este host, asegúrate de que el icono ZBX se vuelve verde, indicando que este host está activo y siendo monitorizado por el agente pasivo de Zabbix:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_003.jpg" alt="Figura 3.3 - Página de configuración de hosts de Zabbix, host lar-book-agent">
+   Figura 3.3 - Página de configuración de hosts de Zabbix, host lar-book-agent
+</p>
+11. Como hemos configurado nuestro host y añadido una plantilla con ítems, ahora podemos ver los valores recibidos en los ítems para este host yendo a **Monitorización** | **Hosts** y marcando el botón **Últimos datos**. Tenga en cuenta que los valores pueden tardar un poco en aparecer:
+<p align = "center">
+   <img src = "https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_004.jpg" alt="Figura 3.4 - Página de últimos datos de Zabbix para el host lar-book-agent">
+   Figura 3.4 - Página de últimos datos de Zabbix para el host lar-book-agent
+</p>
+    
+
 
 
 
