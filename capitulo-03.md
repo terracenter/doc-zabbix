@@ -215,4 +215,115 @@ Hay un montón de cosas pasando bajo el capó del agente Zabbix 2; si estás int
 
 ------------
 
+# Trabajando con monitorización SNMP
+Ahora vamos a hacer algo de lo que más disfruto cuando trabajo con Zabbix: construir monitorización SNMP. Mis raíces profesionales están en la ingeniería de redes, y he trabajado mucho con monitorización SNMP para monitorizar todos estos diferentes dispositivos de red.
+## Preparación
+Para empezar, necesitamos los dos hosts Linux que utilizamos en las recetas anteriores:
+- Nuestro host servidor Zabbix
+- El host que usamos en la receta anterior para monitorizar a través del agente activo de Zabbix
+## Cómo hacerlo...
+Monitorizar mediante SNMP polling es fácil y muy potente. Empezaremos configurando SNMPv3 en nuestro host Linux monitorizado:
+
+1. Empecemos emitiendo los siguientes comandos para instalar SNMP en nuestro host.
+Para sistemas basados en RHEL:
+```bash
+apt install snmp snmpd libsnmp-dev
+```
+Para sistemas Ubuntu:
+```bash
+apt install snmp snmpd libsnmp-dev
+```
+2. Ahora, vamos a crear el nuevo usuario SNMPv3 que utilizaremos para monitorizar nuestro host. Tenga en cuenta que vamos a utilizar contraseñas inseguras, pero asegúrese de utilizar contraseñas seguras para sus entornos de producción. Emita el siguiente comando:
+```bash
+net-snmp-create-v3-user -ro -a my_authpass -x my_privpass -A SHA -X AES snmpv3user
+```
+Esto creará un usuario SNMPv3 con el nombre de usuario `snmpv3user`, la contraseña de autenticación `my_authpass`, y la contraseña de `privilegios my_ privpass`.
+
+3. Asegúrate de editar el archivo de configuración SNMP para permitirnos leer todos los objetos SNMP:
+```bash
+vim /etc/snmp/snmpd.conf
+```
+4.  Añade la siguiente línea en el resto de las líneas de la `view systemview`:
+```bash
+view    systemview    included   .1
+```
+
+5. Ahora inicie y habilite el demonio snmpd para permitirnos empezar a monitorizar este servidor:
+```bash
+systemctl enable snmpd
+systemctl start snmpd
+```
+Esto es todo lo que necesitamos hacer en el lado del host Linux; ahora podemos ir al frontend de Zabbix para configurar nuestro host. Vaya a **Configuración** | **Hosts** en su frontend Zabbix y haga clic en Crear host en la esquina superior derecha.
+
+6. Ahora rellene la página de configuración del host:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_011.jpg" width="auto">
+	Figura 3.11 - Página de configuración de host Zabbix para el host lar-book-agent_snmp
+</p>
+
+7. No olvides cambiar la dirección IP de la interfaz SNMP por tu propio valor.
+8. Asegúrese de añadir la plantilla out-of-the-box correcta como se muestra en la siguiente captura de pantalla:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_011.jpg" width="auto">
+	<img src="" width="auto">
+	Figura 3.12 - Añadir la plantilla Linux SNMP al host
+</p>
+<p>
+**Consejo**
+</p>
+Al actualizar desde una versión anterior de Zabbix a Zabbix 6, no obtendrás todas las nuevas plantillas out-of-the-box. Si crees que te faltan algunas plantillas, puedes descargarlas en el repositorio Git de Zabbix: https://git.zabbix.com/projects/ZBX/repos/zabbix/browse/templates.
+
+9. Estamos utilizando algunas macros en nuestra configuración aquí para el nombre de usuario y contraseña. Podemos utilizar estas macros para añadir un montón de hosts con las mismas credenciales. Esto es muy útil, por ejemplo, si tienes un montón de switches con las mismas credenciales SNMPv3.
+
+Rellenemos las macros en **Administración** | **General** y utilicemos el desplegable para seleccionar **Macros**. Rellena las macros así:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_013.jpg" width="auto">
+	Figura 3.13 - Página de macros globales de Zabbix con macros SNMP
+</p>
+
+<p>**Consejo**</p>
+Una característica interesante en Zabbix 6 es la posibilidad de ocultar macros en el frontend utilizando el tipo de macro Texto secreto. Hay que tener en cuenta que las macros de tipo Secret text siguen sin estar encriptadas en la base de datos de Zabbix, y para macros totalmente encriptadas necesitaríamos algo como HashiCorp Vault. Consulta la documentación para más información: https://www.zabbix.com/documentation/current/en/manual/config/secrets.
+
+Usa el desplegable para cambiar {$SNMPV3_AUTH} y {$SNMPV3_PRIV} a Secret text:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_014.jpg" width="auto">
+Figura 3.14 - Texto secreto de Zabbix utilizado para ocultar datos sensibles (autenticación)
+</p>
+
+11. Ahora, después de aplicar estos cambios haciendo clic en Actualizar, deberíamos ser capaces de monitorizar nuestro servidor Linux a través de SNMPv3. Vayamos a **Monitorización** | **Hosts** y comprobemos la página Últimos datos de nuestro nuevo host:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_015.jpg" width="auto">
+</p>
+Figura 3.15 - SNMP Últimos datos para el host lar-book-agent_snmp
+
+Tenga en cuenta que sus datos pueden tardar algún tiempo en aparecer aquí.
+<p>**Consejo**</p>
+Cuando se trabaja con macros, hay tres niveles en orden de cascada: Macros de nivel global, de plantilla y de host. Cuando trabaje con macros de nivel Global, tenga en cuenta que no se exportan con plantillas o hosts. En la mayoría de los casos, es mejor utilizar el nivel de plantilla y el nivel de host, para mantener sus exportaciones independientes de la configuración global de Zabbix.
+## Cómo funciona...
+Cuando creamos un host como hicimos en el paso 4, Zabbix sondea el host usando SNMP. El sondeo SNMP funciona con OIDs SNMP. Por ejemplo, cuando sondeamos el elemento llamado Memoria libre, le pedimos al agente SNMP que se ejecuta en nuestro host Linux que nos proporcione el valor de 1.3.6.1.4.1.2021.4.6.0. Ese valor es devuelto a nosotros en el host. Ese valor es entonces devuelto a nosotros en el servidor Zabbix:
+<p align="center" >
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_016.jpg" width="auto">
+Figura 3.16 - Diagrama que muestra la comunicación entre el servidor Zabbix y el host SNMP
+</p>
+SNMPv3 añade autenticación y encriptación a este proceso, asegurando que cuando nuestro servidor Zabbix solicita información, esa solicitud es primero encriptada y los datos son enviados de vuelta encriptados también.
+
+También incluimos la opción de utilizar solicitudes masivas al configurar nuestro host. Las peticiones masivas solicitan varios OIDs en el mismo flujo, por lo que este es el método preferido para hacer peticiones SNMP ya que es más eficiente. Sólo desactívalo para hosts que no soporten peticiones masivas.
+
+Por último, echemos un vistazo a los OIDs SNMP, la parte más importante de nuestra petición SNMP. Los OIDs funcionan en una estructura de árbol, lo que significa que cada número detrás del punto puede contener otro valor. Por ejemplo, veamos este OID para nuestro host:
+```bash
+1.3.6.1.4.1.2021.4 = UCD-SNMP-MIB::memory
+```
+Si sondeamos ese OID con la herramienta SnmpWalk CLI o con nuestro servidor Zabbix, obtendremos varios OID de vuelta:
+```bash
+.1.3.6.1.4.1.2021.4.1.0 = INTEGER: 0
+.1.3.6.1.4.1.2021.4.2.0 = STRING: swap
+.1.3.6.1.4.1.2021.4.3.0 = INTEGER: 1679356 kB
+.1.3.6.1.4.1.2021.4.4.0 = INTEGER: 1674464 kB
+.1.3.6.1.4.1.2021.4.5.0 = INTEGER: 1872872 kB
+.1.3.6.1.4.1.2021.4.6.0 = INTEGER: 184068 kB
+```
+Eso incluye nuestro OID 1.3.6.1.4.1.2021.4.6.0 con el valor que contiene nuestra memoria libre. Así es como se construye SNMP, como un árbol.
+
+------------
+
 
