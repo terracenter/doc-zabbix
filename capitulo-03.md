@@ -237,7 +237,7 @@ apt install snmp snmpd libsnmp-dev
 ```bash
 net-snmp-create-v3-user -ro -a my_authpass -x my_privpass -A SHA -X AES snmpv3user
 ```
-Esto creará un usuario SNMPv3 con el nombre de usuario `snmpv3user`, la contraseña de autenticación `my_authpass`, y la contraseña de `privilegios my_ privpass`.
+Esto creará un usuario SNMPv3 con el nombre de usuario `snmpv3user`, la contraseña de autenticación `my_authpass`, y la contraseña de privilegios `my_ privpass`.
 
 3. Asegúrate de editar el archivo de configuración SNMP para permitirnos leer todos los objetos SNMP:
 ```bash
