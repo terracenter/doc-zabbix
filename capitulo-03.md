@@ -325,5 +325,64 @@ Si sondeamos ese OID con la herramienta SnmpWalk CLI o con nuestro servidor Zabb
 Eso incluye nuestro OID 1.3.6.1.4.1.2021.4.6.0 con el valor que contiene nuestra memoria libre. Así es como se construye SNMP, como un árbol.
 
 ------------
+## Creación de comprobaciones sencillas de Zabbix y el atrapador de Zabbix
+En esta receta, vamos a repasar dos comprobaciones que pueden ayudarte a construir algunas configuraciones más personalizadas. Las comprobaciones simples de Zabbix te proporcionan una forma sencilla de monitorizar algunos datos específicos. El Zabbix trapper se combina con el Zabbix sender para obtener datos de tus hosts en el servidor, permitiendo algunas opciones de scripting. Vamos a empezar.
+### Preparación
+Para crear estas comprobaciones, necesitaremos un servidor Zabbix y un host Linux para monitorizar. Podemos utilizar el host con un agente Zabbix y monitorización SNMP de las recetas anteriores.
+
+Ten en cuenta que para estas comprobaciones no necesitamos el agente Zabbix.
+### Cómo hacerlo...
+Trabajar con cheques simples es bastante sencillo, como su nombre indica, así que empecemos.
+### Creación de comprobaciones simples
+Vamos a crear una comprobación simple para monitorizar si un servicio está ejecutándose y aceptando conexiones TCP en un puerto determinado:
+
+1. Para ello, tendremos que crear un nuevo host en el frontend de Zabbix. Vaya a **Configuración** | **Hosts** en su interfaz Zabbix y haga clic en Crear host en la esquina superior derecha.
+2. Cree un host con la siguiente configuración:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_017.jpg" width="auto">
+Figura 3.17 - Página de configuración de host Zabbix para el host lar-book-agent_simple
+</p>
+
+3. Ahora vaya a **Configuración** | **Hosts**, haga clic en el host recién creado, y vaya a **Items**. Queremos crear un nuevo elemento aquí haciendo clic en el botón Crear elemento.
+Vamos a crear un nuevo elemento con los siguientes valores, y después de hacerlo, haremos clic en el botón Añadir en la parte inferior de la página:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_018.jpg" width="auto">
+Figura 3.18 - Página de configuración de elementos de Zabbix para la comprobación del puerto 22 en el host lar-book-agent_simple
+</p>
+
+4. Asegúrate de añadir también una etiqueta al ítem, ya que la necesitamos en varios lugares para filtrar y encontrar nuestro ítem cuando trabajemos con Zabbix. Configúralo así:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_019.jpg" width="auto">}
+	Figura 3.19 - Puerto SSH de Zabbix, pestaña Etiqueta
+</p>
+<em>**Nota importante**</em>
+Aquí estamos añadiendo el elemento clave `net.tcp.services[ssh,,22]`. El puerto en este caso es opcional, ya que podemos especificar el servicio SSH con un puerto diferente si queremos.
+
+5. Ahora deberíamos ser capaces de ver si nuestro servidor está aceptando conexiones SSH en el puerto 22 en nuestra pantalla de Últimos datos. Navegue a Monitorización | Hosts y compruebe en la pantalla Últimos datos nuestro nuevo valor:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_020.jpg" width="auto">
+	Figura 3.20 - Zabbix Última página de datos para el host lar-book-agent_simple, elemento puerto 22 comprobado
+</p>
+6. Hay otra cosa mal aquí. Como puede ver, actualmente no tenemos una configuración de mapeo de valores. El último valor sólo muestra un 1 o un 0. Para cambiar esto, vuelva a **Configuration** | **Hosts** y edite el host `lar-book-agent_simple`.
+7. Haga clic en la ficha Asignación de valores y haga clic en el pequeño botón Agregar para agregar una asignación de valores. Cree lo siguiente:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_021.jpg" width="auto">
+	Figura 3.21 - Host lar-book-agent_simple, ventana de asignación de valores
+</p>
+
+8. Pulse el botón azul Añadir y pulse el botón azul Actualizar.
+9. A continuación, de vuelta a la lista completa de **Configuration** | **Hosts**, navegue hasta nuestro `host lar-book-agent_simple` y pulse sobre Elementos para este host.
+10. Edite el elemento Comprobar si el puerto 22 está disponible y añada la asignación de valores como se indica a continuación:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_022.jpg" width="auto">
+	Figura 3.22 - Host lar-book-agent_simple, ventana de edición de elementos
+</p>
+Eso es todo lo que hay que hacer para crear tus comprobaciones simples en Zabbix. La última página de datos tendrá ahora este aspecto:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_023.jpg" width="auto">
+Figura 3.23 - Última página de datos de nuestro elemento de comprobación del puerto 22
+</p>
+Como puede ver, hay un valor legible por humanos que ahora muestra Arriba o Abajo, lo que nos da una entrada legible por humanos, que es más fácil de entender. Ahora pasemos al elemento atrapador de Zabbix.
+
 
 
