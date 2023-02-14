@@ -359,7 +359,43 @@ Eso es todo lo que hay que hacer para crear tus comprobaciones simples en Zabbix
 	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_023.jpg" width="auto">
 Figura 3.23 - Última página de datos de nuestro elemento de comprobación del puerto 22
 </p>
+
 Como puede ver, hay un valor legible por humanos que ahora muestra Arriba o Abajo, lo que nos da una entrada legible por humanos, que es más fácil de entender. Ahora pasemos al elemento atrapador de Zabbix.
 
+#### Creación de un trapper
+Podemos hacer algunas cosas interesantes con los elementos trapper de Zabbix una vez que tengamos configuraciones más avanzadas. Pero por ahora, vamos a crear un elemento en nuestro host `lar-book-agent_simple`:
 
+1. Ve a **Configuration** | **Hosts** y haz click en el host, luego ve a **Items**. Queremos crear un nuevo elemento aquí de nuevo haciendo clic en el botón Crear elemento.
+Ahora vamos a crear el siguiente elemento y haga clic en el botón **Create Item**:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_024.jpg" width="auto">
+	Figura 3.24 - Pantalla de configuración del receptor de trampas de elementos de Zabbix para el host lar-book-agent_simple
+</p>
 
+2. Asegúrese de navegar también a la pestaña Tags y añadir una etiqueta que utilizaremos más tarde para filtrar:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_025.jpg" width="auto">
+	Figura 3.25 - Pantalla de configuración de etiquetas receptoras de trampas de elementos de Zabbix para el host lar-book-agent_simple
+</p>
+
+3. Si vamos a la CLI de nuestro servidor monitorizado, ahora podemos ejecutar lo siguiente para instalar Zabbix sender:
+**RHEL-based systems:**
+```bash
+dnf -y install zabbix-sender
+```
+**Ubuntu systems:**
+```bash
+apt install zabbix-sender
+```
+4. Después de la instalación, podemos utilizar Zabbix sender para enviar alguna información a nuestro servidor:
+```bash
+zabbix_sender -z 10.16.16.152 -s "lar-book-agent_simple" -k trap -o "Let's test this book trapper"
+```
+Ahora deberíamos ser capaces de ver si nuestro host monitorizado ha enviado el trap de Zabbix y el servidor de Zabbix ha recibido este trap para su procesamiento.
+
+5. Navegue a Monitorización | Hosts y compruebe en la pantalla Últimos datos nuestro nuevo valor:
+<p align="center">
+	<img src="https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_026.jpg" width="auto">
+</p>
+
+# FALTA voy por trap simple
