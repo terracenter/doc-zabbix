@@ -55,17 +55,23 @@ Cuando tengas tu servidor listo, podemos empezar el proceso de instalación.
    ```
 2. Ahora que el repositorio está añadido, vamos a añadir el repositorio MariaDB en nuestro servidor:
 
+   Según este libro, pero instala una versión no soportada por Zabbix, a la fecha
+
    ```bash
    wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
    chmod +x mariadb_repo_setup
    ./mariadb_repo_setup
    ```
 
-Debo corregir errores de Mariadb y zabbix en Debian (Es mi primera instalación que hago con mariaDB)
-Unable to start Zabbix server due to unsupported MariaDB database version (10.11.02).
-Must not be higher than (10.10.xx).
-Use of supported database version is highly recommended
+Nota:
+Must not be higher than (10.10.xx). Use of supported database version is highly recommended
 Override by setting AllowUnsupportedDBVersions=1 in Zabbix server configuration file at your own risk.
+
+Para Debian 11 (estoy usando), como dice la documentacion https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/
+
+```bash
+curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.10" --os-type=debian  --os-version=11
+```
 
 3. A continuación, instálelo y habilítelo mediante los siguientes comandos:
 
