@@ -16,7 +16,7 @@ Empezaremos este capítulo con una máquina (virtual) Linux vacía. Siéntete li
 
 Así que antes de empezar, asegúrate de tener tu máquina Linux lista.
 
-### Instalación del servidor Zabbix
+## Instalación del servidor Zabbix
 
 Antes de hacer nada dentro de Zabbix, necesitamos instalarlo y prepararnos para empezar a trabajar con él. En esta receta, vamos a descubrir cómo instalar el servidor Zabbix 6.
 
@@ -162,6 +162,7 @@ Ahora hemos terminado con los preparativos para nuestro lado MariaDB y estamos l
    DBUser=zabbix
    DBPassword=password
    ```
+
    **Consejo**
 
    Antes de iniciar el servidor Zabbix, debe configurar SELinux o AppArmor para permitir el uso del servidor Zabbix. Si se trata de una máquina de prueba, puede utilizar una postura permisiva para SELinux o desactivar AppArmor, pero se recomienda no hacer esto en producción.
@@ -171,3 +172,36 @@ Ahora hemos terminado con los preparativos para nuestro lado MariaDB y estamos l
    systemctl enable zabbix-server
    systemctl start zabbix-server
    ```
+4. Comprueba si todo arranca como se espera con lo siguiente:
+
+   ```bash
+   systemctl status zabbix-server 
+   ```
+5. Alternativamente, supervise el archivo de registro, que proporciona una descripción detallada del proceso de inicio de Zabbix:
+
+   ```bash
+   tail -f /var/log/zabbix/zabbix_server.log 
+   ```
+6. La mayoría de los mensajes en este archivo están bien y pueden ser ignorados con seguridad, pero asegúrese de leer bien y ver si hay algún problema con el arranque de su servidor Zabbix.
+
+### Cómo funciona...
+
+El servidor Zabbix es el proceso principal de nuestra configuración Zabbix. Es responsable de nuestra monitorización, alertas de problemas, y muchas de las otras tareas descritas en este libro. Una pila completa de Zabbix consiste en al menos lo siguiente:
+
+* Una base de datos (MySQL, PostgreSQL u Oracle)
+* Un servidor Zabbix
+* Apache o NGINX ejecutando el frontend Zabbix con PHP 7.2+, pero PHP 8 no está soportado actualmente
+
+  **Nota**:
+
+  A la fecha funciona con 7.2.5 o superior, 8.0 - 8.2, según documentación: https://www.zabbix.com/documentation/6.0/en/manual/installation/requirements
+
+Podemos ver los componentes y cómo se comunican entre sí en la siguiente figura:
+
+![Figura 1.1 - Diagrama de comunicaciones de la configuración de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_001.jpg)
+
+Figura 1.1 - Diagrama de comunicaciones de la configuración de Zabbix
+
+Acabamos de configurar el servidor Zabbix y la base de datos; ejecutando estos dos, estamos básicamente listos para empezar a monitorizar. El servidor Zabbix se comunica con la base de datos Zabbix para escribir en ella los valores recogidos.
+
+Sin embargo, todavía hay un problema: no podemos configurar nuestro servidor Zabbix para hacer nada. Para ello, vamos a necesitar nuestro frontend Zabbix, que vamos a configurar en la siguiente receta.
