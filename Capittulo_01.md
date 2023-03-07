@@ -70,7 +70,7 @@ Override by setting AllowUnsupportedDBVersions=1 in Zabbix server configuration 
 Para Debian 11 (estoy usando), como dice la documentacion https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/
 
 ```bash
-curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version="mariadb-10.10" --os-type=debian  --os-version=11
+curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash -s -- --mariadb-server-version="mariadb-10.10" --os-type=debian  --os-version=11
 ```
 
 3. A continuación, instálelo y habilítelo mediante los siguientes comandos:
@@ -205,3 +205,125 @@ Figura 1.1 - Diagrama de comunicaciones de la configuración de Zabbix
 Acabamos de configurar el servidor Zabbix y la base de datos; ejecutando estos dos, estamos básicamente listos para empezar a monitorizar. El servidor Zabbix se comunica con la base de datos Zabbix para escribir en ella los valores recogidos.
 
 Sin embargo, todavía hay un problema: no podemos configurar nuestro servidor Zabbix para hacer nada. Para ello, vamos a necesitar nuestro frontend Zabbix, que vamos a configurar en la siguiente receta.
+
+## Configuración del frontend Zabbix
+
+El frontend de Zabbix es la cara de nuestro servidor. Es donde vamos a configurar todos nuestros hosts, plantillas, cuadros de mando, mapas, y todo lo demás. Sin él, estaríamos ciegos a lo que está pasando, en el lado del servidor. Por lo tanto, vamos a configurar nuestro frontend Zabbix en esta receta.
+
+### Preparándonos
+
+Vamos a configurar el frontend de Zabbix usando Apache. Antes de comenzar con esta receta, asegúrese de que está ejecutando el servidor Zabbix en una distribución de Linux de su elección. Usaré los hosts `lar-book-centos` y `lar-book-ubuntu` en estas recetas para mostrar el proceso de configuración en CentOS 8 y Ubuntu 20.
+
+### Cómo hacerlo...
+
+1. Vamos a instalar el frontend. Ejecute el siguiente comando para empezar.
+   Para sistemas basados en RHEL:
+
+   ```bash
+   dnf install zabbix-web-mysql zabbix-apache-conf 
+   ```
+
+   Para sistemas Debian / Ubuntu:
+
+   **Nota**: Si deseas utilizar PHP 8.2 en Debian 11
+
+   * Instale los paquetes temporales necesarios:
+
+   ```bash
+    apt update
+    apt install -y lsb-release ca-certificates apt-transport-https software-properties-common gnupg2
+   ```
+
+   * Añada el repositorio Surý Debian PPA a su sistema Debian.
+
+     ```bash
+     echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
+     ```
+   * Importar paquetes firmando clave GPG;
+
+     ```bash
+     curl -fsSL  https://packages.sury.org/php/apt.gpg|  gpg --dearmor -o /etc/apt/trusted.gpg.d/sury-keyring.gpg
+     ```
+   * Confirme si el repositorio funciona descargando la información de los paquetes de todas las fuentes configuradas:
+
+     ```bash
+      apt update
+     ```
+
+   ```bash
+    apt install zabbix-frontend-php zabbix-apache-conf 
+   ```
+
+   **Consejo**
+
+   No olvide permitir los puertos 80 y 443 en su cortafuegos si está utilizando uno. Sin esto, no podrás conectarte al frontend.
+2. Reinicie los componentes de Zabbix y asegúrese de que se inician al arrancar el servidor con lo siguiente.
+
+   Para sistemas basados en RHEL:
+
+   ```bash
+   systemctl enable httpd php-fpm
+   systemctl restart zabbix-server httpd php-fpm
+   ```
+
+   Para sistemas Ubuntu:
+
+   ```bash
+   systemctl enable apache2
+   systemctl restart zabbix-server apache2
+   ```
+3. Ahora deberíamos ser capaces de navegar a nuestro frontend Zabbix sin ningún problema y comenzar los pasos finales para configurar el frontend Zabbix.
+4. Vayamos a nuestro navegador y naveguemos hasta la IP de nuestro servidor. Debería verse así:
+
+   ```bash
+   http://<your_server_ip>/zabbix 
+   ```
+5. Ahora deberíamos ver la siguiente página web:
+   ![Figura 1.2 - Pantalla de bienvenida de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_002.jpg)
+   Figura 1.2 - Pantalla de bienvenida de Zabbix
+
+   Si no ves esta página web, es posible que hayas omitido algunos pasos en el proceso de configuración. Vuelva sobre sus pasos y vuelva a comprobar sus archivos de configuración; incluso el más pequeño error tipográfico podría impedir que la página web se sirva.
+6. Continuemos haciendo clic en **Siguiente paso** en esta página, que le servirá con la siguiente página:
+   ![Figura 1.3 - Página de requisitos previos para la instalación de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_003.jpg)
+
+   Figura 1.3 - Página de requisitos previos para la instalación de Zabbix
+7. Todas y cada una de las opciones deberían aparecer **OK** ahora; si no es así, corrija el error que le está mostrando. Si todo está bien, puede continuar haciendo clic en Siguiente paso de nuevo, que le llevará a la página siguiente:
+   ![Figura 1.4 - Página de conexión a la base de datos de instalación de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_004.jpg)
+
+   Figura 1.4 - Página de conexión a la base de datos de instalación de Zabbix
+8. Aquí, tenemos que decirle a nuestro frontend Zabbix donde se encuentra nuestra base de datos MySQL. Desde que la instalamos en localhost, sólo tenemos que asegurarnos de que publicamos el nombre correcto de la base de datos, el nombre de usuario de la base de datos, y la contraseña del usuario de la base de datos.
+9. Esto debería hacer que el frontend Zabbix pueda comunicarse con la base de datos. Vamos a proceder haciendo clic en Siguiente paso de nuevo:
+   ![Figura 1.5 - Página de detalles del servidor de instalación de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_005.jpg)
+
+   Figura 1.5 - Página de detalles del servidor de instalación de Zabbix
+
+   Lo siguiente es la configuración del servidor Zabbix. Asegúrese de nombrar a su servidor algo útil o algo fresco. Por ejemplo, he configurado un servidor de producción llamado Meeseeks porque cada vez que recibíamos una alerta, podíamos hacer que Zabbix dijera "Soy el Sr. Meeseeks mírame". Pero algo como zabbix.ejemplo.com también funciona.
+10. Pongamos un nombre a nuestro servidor, configuremos la zona horaria para que coincida con la nuestra y pasemos al siguiente paso:
+    ![Figura 1.6 - Página de resumen de la instalación de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_006.jpg)
+
+    Figura 1.6 - Página de resumen de la instalación de Zabbix
+11. Verifique su configuración y proceda a hacer clic en Siguiente paso una vez más.
+    ![Figura 1.7 - Página de finalización de la instalación de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_007.jpg)
+
+    Figura 1.7 - Página de finalización de la instalación de Zabbix
+12. Ha instalado correctamente el frontend Zabbix. Ahora puede hacer clic en el botón Finalizar y podemos empezar a utilizar el frontend. Se le mostrará una página de inicio de sesión donde puede utilizar las siguientes credenciales por defecto:
+
+    ```bash
+    Username: Admin
+    Password: zabbix
+    ```
+
+### Cómo funciona...
+
+Ahora que hemos instalado nuestro frontend Zabbix, nuestra configuración de Zabbix está completa y estamos listos para empezar a trabajar con ella. Nuestro frontend Zabbix se conectará a nuestra base de datos para editar los valores de configuración de nuestra configuración, como podemos ver en la siguiente figura:
+![Figura 1.8 - Diagrama de comunicaciones de configuración de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_008.jpg)
+
+Figura 1.8 - Diagrama de comunicaciones de configuración de Zabbix
+
+El frontend Zabbix también hablará con nuestro servidor Zabbix, pero esto es sólo para asegurarse de que el servidor Zabbix está en funcionamiento. Ahora que sabemos cómo configurar el frontend Zabbix, podemos empezar a usarlo. Vamos a comprobarlo después de la siguiente receta.
+
+### Hay más...
+
+Zabbix proporciona una guía de configuración muy práctica, que contiene muchos detalles sobre la instalación de Zabbix. Yo siempre recomendaría mantener esta página abierta durante una instalación de Zabbix, ya que contiene información como el enlace al último repositorio. Compruébalo aquí:
+
+https://www.zabbix.com/download
