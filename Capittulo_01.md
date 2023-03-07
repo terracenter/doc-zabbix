@@ -327,3 +327,29 @@ El frontend Zabbix también hablará con nuestro servidor Zabbix, pero esto es s
 Zabbix proporciona una guía de configuración muy práctica, que contiene muchos detalles sobre la instalación de Zabbix. Yo siempre recomendaría mantener esta página abierta durante una instalación de Zabbix, ya que contiene información como el enlace al último repositorio. Compruébalo aquí:
 
 https://www.zabbix.com/download
+
+---
+
+## Habilitar la alta disponibilidad del servidor Zabbix
+
+Zabbix 6 está aquí, con una de las características más esperadas de todos los tiempos. La alta disponibilidad llevará su configuración Zabbix al siguiente nivel, asegurándose de que si uno de sus servidores Zabbix tiene problemas, otro se hará cargo.
+
+Una gran cosa acerca de esta implementación es que soporta una forma propietaria fácil de poner de uno a muchos servidores Zabbix en un clúster. Una gran manera de asegurarse de que su monitorización se mantiene en el aire en todo momento (o al menos tanto como sea posible).
+
+Ahora tengo que ser honesto, no podemos hacer nada como el equilibrio de carga todavía. Pero eso está incluido en la hoja de ruta de Zabbix utilizando los proxies Zabbix en una versión posterior. Mantenga un ojo hacia fuera para cualquier actualización con respecto a que aquí:
+
+https://www.zabbix.com/roadmap
+
+### Preparación
+
+Antes de empezar, ten en cuenta que la creación de una configuración de alta disponibilidad se considera un tema avanzado. Puede ser más difícil que otras recetas de este capítulo.
+
+Para esta configuración, necesitaremos tres nuevas máquinas virtuales, ya que vamos a crear una configuración de Zabbix dividida, a diferencia de la configuración que creamos en la primera receta de este capítulo. Echemos un vistazo a cómo he nombrado a nuestras tres nuevas máquinas virtuales y cuáles serán sus direcciones IP:
+
+* `lar-book-ha1` (`192.168.0.1`)
+* `lar-book-ha2` (`192.168.0.2`)
+* `lar-book-ha-db` (`192.168.0.10`)
+
+Dos de estos servidores ejecutarán nuestro clúster de servidores Zabbix y un frontend Zabbix. El otro servidor es sólo para nuestra base de datos MySQL. Tenga en cuenta que las direcciones IP utilizadas en el ejemplo pueden ser diferentes para usted. Utilice las correctas para su entorno.
+
+También necesitaremos una dirección IP virtual para nuestros nodos de cluster. Usaremos 192.168.0.5 en el ejemplo.
