@@ -352,4 +352,374 @@ Para esta configuración, necesitaremos tres nuevas máquinas virtuales, ya que 
 
 Dos de estos servidores ejecutarán nuestro clúster de servidores Zabbix y un frontend Zabbix. El otro servidor es sólo para nuestra base de datos MySQL. Tenga en cuenta que las direcciones IP utilizadas en el ejemplo pueden ser diferentes para usted. Utilice las correctas para su entorno.
 
-También necesitaremos una dirección IP virtual para nuestros nodos de cluster. Usaremos 192.168.0.5 en el ejemplo.
+También necesitaremos una dirección IP virtual para nuestros nodos de cluster. Usaremos `192.168.0.5` en el ejemplo.
+
+**Consejo**
+
+En nuestra configuración, estamos utilizando sólo una base de datos MySQL Zabbix. Para asegurarse de que todas las partes de Zabbix están configuradas como altamente disponibles, podría valer la pena considerar la configuración de MySQL en una configuración maestro/maestro. Esto sería una gran combinación con la alta disponibilidad del servidor Zabbix.
+
+Este libro de cocina NO utilizará SELinux o AppArmor, así que asegúrese de desactivarlas o añadir las políticas correctas antes de utilizar esta guía. Además, esta guía tampoco detalla cómo configurar su firewall, así que asegúrese de hacer esto de antemano también.
+
+### Cómo hacerlo...
+
+Para su comodidad, hemos dividido esta sección de Cómo hacerlo... en tres partes. Una es la configuración de la base de datos, la otra es la configuración del cluster de servidores Zabbix, y la última es cómo configurar el frontend Zabbix de forma redundante. La sección Cómo funciona... proporcionará una explicación sobre toda la configuración.
+
+#### Configuración de la base de datos
+
+Vamos a empezar con la configuración de nuestra base de datos Zabbix, lista para ser utilizada en una configuración de servidor Zabbix de alta disponibilidad:
+
+1. Acceda a `lar-book-ha-db` e instale el repositorio MariaDB con el siguiente comando en sistemas basados en RedHat
+
+   ```bash
+   wget https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+   chmod +x mariadb_repo_setup
+   ./mariadb_repo_setup
+   ```
+2. A continuación, vamos a instalar la aplicación de servidor MariaDB con el siguiente comando.
+
+   Para sistemas basados en RHEL:
+
+   ```bash
+   dnf install mariadb-server
+   systemctl enable mariadb
+   systemctl start mariadb
+   ```
+
+   Para sistemas Ubuntu:
+
+   ```bash
+   apt install mariadb-server
+   systemctl enable mariadb
+   systemctl start mariadb
+   ```
+3. Después de instalar MariaDB, asegúrese de asegurar su instalación con el siguiente comando:
+
+   ```bash
+   /usr/bin/mariadb_secure_installation
+   ```
+4. Asegúrate de responder a las preguntas con un sí (Y) y configura una contraseña raíz que sea segura. Es muy recomendable utilizar una bóveda de contraseñas para almacenarla.
+5. Ahora vamos a crear nuestra base de datos Zabbix para que nuestros servidores Zabbix se conecten. Inicie sesión en MariaDB con el siguiente comando:
+
+   ```bash
+   mysql -u root -p
+   ```
+6. Introduzca la contraseña que estableció durante la instalación segura y cree la base de datos Zabbix con los siguientes comandos. No olvide cambiar la contraseña en los comandos segundo, tercero y cuarto:
+
+   ```bash
+   create database zabbix character set utf8mb4 collate utf8mb4_bin;
+   create user zabbix@'192.168.0.1' identified by 'password';
+   create user zabbix@'192.168.0.2' identified by 'password';
+   create user zabbix@'192.168.0.5' identified by 'password';
+   grant all privileges on zabbix.* to 'zabbix'@'192.168.0.1' identified by 'password';
+   grant all privileges on zabbix.* to 'zabbix'@'192.168.0.2' identified by 'password';
+   grant all privileges on zabbix.* to 'zabbix'@'192.168.0.5' identified by 'password';
+   flush privileges;
+   quit
+   ```
+7. Por último, necesitamos importar la configuración inicial de la base de datos Zabbix, pero para ello, necesitamos instalar el repositorio Zabbix.
+
+   Para sistemas basados en RHEL:
+
+   ```bash
+   rpm -Uvh https://repo.zabbix.com/zabbix/6.0/rhel/8/x86_64/zabbix-release-6.0-1.el8.noarch.rpm
+   dnf clean all
+   ```
+8. A continuación, tenemos que instalar el módulo SQL scripts Zabbix.
+
+   Para los sistemas basados en RHEL:
+
+   ```bash
+   dnf install zabbix-sql-scripts
+   ```
+
+   Para sistemas Ubuntu:
+
+   ```bash
+   apt install zabbix-sql-scripts
+   ```
+9. A continuación, ejecutamos el siguiente comando, que puede tardar un poco, así que ten paciencia hasta que termine:
+
+   ```bash
+   zcat /usr/share/doc/zabbix-sql-scripts/mysql/server.sql.gz | mysql -uroot -p zabbix
+   ```
+
+#### Configuración de los nodos del cluster del servidor Zabbix
+
+La configuración de los nodos del cluster funciona de la misma manera que la configuración de cualquier nuevo servidor Zabbix. La única diferencia es que tendremos que especificar algunos parámetros nuevos de configuración.
+
+Para sistemas Ubuntu, utilice el siguiente comando:
+
+1. Empecemos añadiendo el repositorio Zabbix 6.0 a nuestros sistemas `lar-book-ha1` y `lar-book-ha2`:
+
+   ```bash
+   rpm -Uvh https://repo.zabbix.com/zabbix/6.0/rhel/8/x86_64/zabbix-release-6.0-1.el8.noarch.rpm
+   dnf clean all
+   ```
+
+Para sistemas Ubuntu, utilice el siguiente comando:
+
+```bash
+wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
+dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
+apt update
+```
+
+2. Ahora vamos a instalar la aplicación de servidor Zabbix con el siguiente comando.
+
+Para sistemas basados en RHEL:
+
+```bash
+dnf install zabbix-server-mysql
+```
+
+Para sistemas Ubuntu:
+
+```bash
+apt install zabbix-server-mysql 
+```
+
+3. Ahora editaremos los archivos de configuración del servidor Zabbix, empezando por `lar-book-ha1`. Emita el siguiente comando:
+
+   ```bash
+   vim /etc/zabbix/zabbix_server.conf
+   ```
+4. A continuación, añada las siguientes líneas para permitir una conexión a la base de datos:
+
+   ```bash
+   DBHost=192.168.0.10
+   DBPassword=password
+   ```
+5. Para habilitar la alta disponibilidad en este host, añada las siguientes líneas en el mismo archivo:
+
+   ```bash
+   HANodeName=lar-book-ha1
+   ```
+6. Para asegurarnos de que nuestro frontend Zabbix sabe dónde conectarse si hay un fallo de nodo, rellene lo siguiente:
+
+   ```bash
+   NodeAddress=192.168.0.1
+   ```
+7. Guarda el archivo y hagamos lo mismo para nuestro host `lar-book-ha2` editando su archivo:
+
+   ```bash
+   vim /etc/zabbix/zabbix_server.conf
+   ```
+8. A continuación, añada las siguientes líneas para permitir una conexión a la base de datos:
+
+   ```bash
+   DBHost=192.168.0.10
+   DBPassword=password
+   ```
+9. Para habilitar la alta disponibilidad en este host, añada las siguientes líneas en el mismo archivo:
+
+   ```bash
+   HANodeName=lar-book-ha2
+   ```
+10. Para asegurarnos de que nuestro frontend Zabbix sabe dónde conectarse si hay un fallo de nodo, rellene lo siguiente:
+
+    ```bash
+    systemctl enable zabbix-server
+    systemctl start zabbix-server
+    ```
+
+#### Configurando Apache con alta disponibilidad
+
+Para asegurarnos de que nuestro frontend también está configurado de tal manera que si un servidor Zabbix tiene problemas falla, vamos a configurarlos con keepalived. Veamos cómo hacerlo.
+
+1. Comencemos iniciando sesión en `lar-book-ha1` y `lar-book-ha2` e instalando keepalived.
+   Para sistemas basados en RHEL:
+
+   ```bash
+   dnf install -y keepalived
+   ```
+
+   Para sistemas Ubuntu:
+
+   ```bash
+   apt install keepalived
+   ```
+2. Luego, en lar-book-ha1, edita la configuración keepalived con el siguiente comando:
+
+   ```bash
+    vim /etc/keepalived/keepalived.conf
+   ```
+3. Borre todo de este archivo y añada el siguiente texto al archivo:
+
+   ```bash
+   vrrp_track_process chk_apache_httpd {
+      process httpd
+      weight 10
+      }
+
+   vrrp_instance ZBX_1 {
+      state MASTER
+      interface ens192
+      virtual_router_id 51
+      priority 244
+      advert_int 1
+
+      authentication {
+         auth_type PASS
+         auth_pass password
+      }
+
+      track_process {
+         chk_apache_httpd
+      }
+
+      virtual_ipaddress {
+         192.168.0.5/24
+         }
+   }
+
+   ```
+4. No olvides actualizar la `contraseña `a algo seguro y editar la interfaz `ens192` a tu propio nombre/número de interfaz. Para Ubuntu, cambie `httpd` por `apache2`.
+   Nota Importante
+
+   En el archivo anterior, hemos especificado `virtual_router_id 51`. Asegúrese de que el ID de enrutador virtual 51 no se utiliza en cualquier lugar de la red todavía. Si lo es, simplemente cambie el ID del enrutador virtual a lo largo de esta receta.
+5. En `lar-book-ha2`, edita el mismo archivo con el siguiente comando:
+
+   ```bash
+   vim /etc/keepalived/keepalived.conf
+   ```
+6. Borre todo del archivo con dG y esta vez añadiremos la siguiente información:
+
+   ```bash
+   vrrp_track_process chk_apache_httpd {
+         process httpd
+         weight 10
+   }
+   vrrp_instance ZBX_1 {
+           state BACKUP
+           interface ens192
+           virtual_router_id 51
+           priority 243
+           advert_int 1
+           authentication {
+                   auth_type PASS
+                   auth_pass password
+           }
+           track_process {
+                   chk_apache_httpd
+           }
+           virtual_ipaddress {
+                   192.168.0.5/24
+           }
+   }
+   ```
+7. Una vez más, no olvide actualizar la `password` a algo seguro y editar la interfaz `ens192` a su propio nombre/número de interfaz. Para Ubuntu, cambia `httpd` por `apache2`.
+8. Ahora vamos a instalar el frontend Zabbix con el siguiente comando.
+
+   Para sistemas basados en RHEL:
+
+   ```bash
+   dnf install httpd zabbix-web-mysql zabbix-apache-conf
+   ```
+
+   Para sistemas Ubuntu:
+
+   ```bash
+   apt install apache2 zabbix-frontend-php zabbix-apache-conf
+   ```
+9. Inicie el servidor web y keepalived para que su frontend Zabbix esté disponible con el siguiente comando:
+
+   ```bash
+   systemctl enable httpd keepalived
+   systemctl start httpd keepalived
+   ```
+10. A continuación, estamos listos para configurar nuestro frontend Zabbix. Navega a tu dirección IP virtual (en el caso de la IP de ejemplo, `http://192.168.0.5/zabbix`) y verás la siguiente página:
+
+    ![Figura 1.9 - Ventana de configuración inicial de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_009.jpg)
+
+Figura 1.9 - Ventana de configuración inicial de Zabbix
+
+11. Haga clic en Siguiente paso dos veces hasta que vea la siguiente página:
+    ![Figura 1.10 - Ventana de configuración de la base de datos Zabbix para lar-book-ha1](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_010.jpg)
+
+Figura 1.10 - Ventana de configuración de la base de datos Zabbix para lar-book-ha1
+
+12. Asegúrese de rellenar el host de la base de datos con la dirección IP de nuestra base de datos Zabbix MariaDB (`192.168.0.10`). A continuación, rellene la contraseña de base de datos para nuestro usuario de base de datos zabbix.
+13. Entonces, para el último paso, para nuestro primer nodo, configure el nombre del servidor Zabbix como `lar-book-ha1` y seleccione su zona horaria como se ve en la siguiente captura de pantalla.
+    ![Figura 1.11 - Ventana de configuración del servidor Zabbix para lar-book-ha1](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_011.jpg)
+
+Figura 1.11 - Ventana de configuración del servidor Zabbix para lar-book-ha1
+
+14. A continuación, haga clic en **Next step** y **Finish**.
+15. Ahora tenemos que hacer lo mismo con nuestro segundo frontend. Inicie sesión en `lar-book-ha1` y haga lo siguiente.
+
+En sistemas basados en RHEL:
+
+```bash
+systemctl stop httpd
+```
+
+Para sistemas Ubuntu:
+
+```bash
+systemctl stop apache2
+```
+
+16. Cuando navegues a tu IP virtual (en el caso de la IP de ejemplo, `http://192.168.0.5/zabbix`), volverás a ver el mismo asistente de configuración.
+17. Rellena de nuevo los datos de la base de datos:
+    ![Figura 1.12 - Ventana de configuración de la base de datos Zabbix para lar-book-ha2](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_012.jpg)
+
+    Figura 1.12 - Ventana de configuración de la base de datos Zabbix para lar-book-ha2
+18. A continuación, asegúrese de configurar el nombre del servidor Zabbix como `lar-book-ha2` como se ve en la captura de pantalla.
+    ![Figura 1.13 - Ventana de configuración del servidor Zabbix para lar-book-ha2](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_013.jpg)
+
+    Figura 1.13 - Ventana de configuración del servidor Zabbix para lar-book-ha2
+19. Ahora tenemos que volver a habilitar el frontend lar-book-ha1 haciendo lo siguiente.
+    En sistemas basados en RHEL:
+
+    ```bash
+    systemctl start httpd
+    ```
+
+    Para sistemas Ubuntu:
+
+    ```bash
+    systemctl start apache2
+    ```
+
+Ese debería ser nuestro último paso. Ahora todo debería estar funcionando como se esperaba. Asegúrese de comprobar el archivo de registro del servidor Zabbix para ver si los nodos de HA están funcionando como se esperaba.
+
+### Cómo funciona...
+
+Ahora que lo hemos hecho, ¿cómo funciona realmente el servidor Zabbix en modo de alta disponibilidad? Empecemos por comprobar la página Informes | Información del sistema en nuestro frontend Zabbix.
+
+![Figura 1.14 - Información del sistema del servidor Zabbix con información de HA](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_014.jpg)
+
+Figura 1.14 - Información del sistema del servidor Zabbix con información de HA
+
+Ahora podemos ver que tenemos nueva información disponible. Por ejemplo, el parámetro Cluster de alta disponibilidad. Este parámetro nos dice ahora si la alta disponibilidad está habilitada o no y cuál es el retardo de conmutación por error. En nuestro caso, es de 1 minuto, lo que significa que puede pasar hasta 1 minuto antes de que se inicie la conmutación por error.
+
+Además, podemos ver cada nodo de nuestro cluster. Como Zabbix ahora soporta de uno a muchos nodos en un cluster, podemos ver cada uno de los que participan en nuestro cluster aquí mismo. Echemos un vistazo a la configuración que hemos construido:
+
+![Figura 1.15 - Configuración de HA del servidor Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_015.jpg)
+
+Figura 1.15 - Configuración de HA del servidor Zabbix
+
+Como se puede ver en la configuración, hemos conectado nuestros dos nodos de servidor Zabbix lar-book-ha1 y lar-book-ha2 a nuestra única base de datos Zabbix lar-book-ha-db. Debido a que nuestra base de datos Zabbix es nuestra única fuente de verdad, se puede utilizar para mantener la configuración de nuestro clúster también. Al final, todo lo que hace Zabbix se mantiene siempre en la base de datos, desde la configuración del host a los datos de la historia a la información de alta disponibilidad. Es por eso que la construcción de un clúster Zabbix es tan simple como poner el `HANodeName`en el archivo de configuración del servidor Zabbix.
+
+También incluimos el parámetro `NodeAddress` en el archivo de configuración. Este parámetro es utilizado por el frontend Zabbix para asegurarse de que nuestra información del sistema (widget) y el servidor Zabbix no están ejecutando el trabajo de notificación frontend. El parámetro `NodeAddress` le dirá al frontend a qué dirección IP conectarse para cada servidor respectivo una vez que se convierta en el servidor Zabbix activo.
+
+Para llevar las cosas un poco más lejos, he añadido una simple configuración keepalived a esta instalación también. Keepalived es una forma de construir configuraciones simples VRRP fail over entre servidores Linux. En nuestro caso, hemos introducido el VIP como `192.168.0.5` y hemos añadido la monitorización del proceso `chk_apache_httpd` para determinar cuándo se produce la conmutación por error. Nuestra conmutación por error funciona de la siguiente manera:
+
+```bash
+lar-book-ha1 has priority 244
+lar-book-ha2 has priority 243
+```
+
+Si **HTTPd** o **Apache 2** se está ejecutando en nuestro nodo, eso añade un peso de 10 a nuestra prioridad, lo que lleva a la prioridad total de `254` y `253`, respectivamente. Ahora imaginemos que `lar-book-ha1` ya no tiene el proceso del servidor web en ejecución. Eso significa que su prioridad cae a `244`, que es inferior a `253` en `lar-book-ha2`, que tiene el proceso de servidor web en ejecución.
+
+Cualquier host que tenga la prioridad más alta es el host que tendrá el VIP `192.168.0.5`, lo que significa que ese host está ejecutando el frontend de Zabbix que será servido.
+
+Combinando estas dos formas de configurar la alta disponibilidad, acabamos de crear redundancia para dos de las partes que componen nuestra configuración de Zabbix, asegurándonos de que podemos mantener las interrupciones al mínimo.
+
+### Hay más...
+
+Ahora te preguntarás, ¿qué pasa si quiero ir más allá en términos de configuración de alta disponibilidad? En primer lugar, la característica de alta disponibilidad de Zabbix está construida para ser simple y comprensible para toda la base de usuarios de Zabbix. Lo que significa que a partir de ahora, es posible que no vea la misma cantidad de características que obtendría con una implementación de terceros.
+
+Sin embargo, la nueva característica de alta disponibilidad del servidor Zabbix ha demostrado ser una característica muy esperada que realmente añade algo a la mesa. Si desea ejecutar una configuración de alta disponibilidad como esta, la mejor manera de añadir un nivel más de complejidad a la alta disponibilidad es una configuración maestro/maestro MySQL. Configurar la base de datos Zabbix con alta disponibilidad, que es la principal fuente de verdad, se asegurará de que su configuración Zabbix realmente es fiable en tantas formas como sea posible. Para obtener más información acerca de la replicación MariaDB, consulte la documentación aquí: https://mariadb.com/kb/en/standard-replication/.
+
+---
