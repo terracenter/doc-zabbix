@@ -1,4 +1,4 @@
-# Capítulo 1: Instalando Zabbix y Empezando a Usar el Frontend
+1. Capítulo 1: Instalando Zabbix y Empezando a Usar el Frontend
 
 Zabbix 6 es como una continuación de Zabbix 5, ya que esta vez no estamos viendo grandes cambios en la interfaz de usuario. Sin embargo, en Zabbix 6, usted todavía encontrará un montón de mejoras, tanto en la interfaz de usuario y componentes básicos. Por ejemplo, la introducción de alta disponibilidad para el servidor Zabbix. Detallaremos todos los cambios importantes a lo largo del libro.
 
@@ -723,3 +723,119 @@ Ahora te preguntarás, ¿qué pasa si quiero ir más allá en términos de confi
 Sin embargo, la nueva característica de alta disponibilidad del servidor Zabbix ha demostrado ser una característica muy esperada que realmente añade algo a la mesa. Si desea ejecutar una configuración de alta disponibilidad como esta, la mejor manera de añadir un nivel más de complejidad a la alta disponibilidad es una configuración maestro/maestro MySQL. Configurar la base de datos Zabbix con alta disponibilidad, que es la principal fuente de verdad, se asegurará de que su configuración Zabbix realmente es fiable en tantas formas como sea posible. Para obtener más información acerca de la replicación MariaDB, consulte la documentación aquí: https://mariadb.com/kb/en/standard-replication/.
 
 ---
+
+## Usando el frontend de Zabbix
+
+Si es la primera vez que usas Zabbix, enhorabuena por llegar a la interfaz de usuario. Si eres un usuario que vuelve a Zabbix, ha habido algunos cambios en la UI de Zabbix 6 que puede que notes. Vamos a repasar algunos de los diferentes elementos que podemos encontrar en el frontend de Zabbix para que durante este libro, te sientas seguro de encontrar todo lo que necesitas.
+
+### Preparándonos
+
+Para empezar con la interfaz de Zabbix, todo lo que tenemos que hacer es iniciar sesión en el frontend. Se le servirá con la siguiente página en la IP en la que su servidor está ejecutando el frontend Zabbix:
+
+![Figura 1.16 - Pantalla de inicio de sesión de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_016.jpg)
+
+Figura 1.16 - Pantalla de inicio de sesión de Zabbix
+
+Asegúrate de iniciar sesión en el frontend de Zabbix con las credenciales por defecto:
+
+* Username: `Admin`
+* Password: `zabbix`
+
+**Consejo**
+Al igual que en Linux, Zabbix distingue entre mayúsculas y minúsculas en la mayoría de los sitios. Cuando introduzcas tu nombre de usuario, asegúrate de incluir las mayúsculas y minúsculas correctas; de lo contrario, ¡no podrás iniciar sesión!
+
+### Cómo hacerlo...
+
+Después de iniciar sesión, se le servirá con la página por defecto, que es el tablero de instrumentos por defecto. Esto es lo que Zabbix ha llamado vista Global y nos proporciona una buena visión general de lo que está pasando. Podemos personalizar completamente este y todos los demás cuadros de mando que Zabbix proporciona, pero es una buena idea familiarizarse con la configuración por defecto antes de construir algo nuevo:
+
+![Figura 1.17 - Cuadro de mandos de la vista global](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_017.jpg)
+
+Figura 1.17 - Cuadro de mandos de la vista global
+
+Así que, vamos a empezar a conocer este frontend Zabbix 6 viendo el panel de control por defecto. Por favor, sigue a lo largo del frontend haciendo clic y comprobando el contenido mencionado.
+
+Zabbix utiliza dashboards y están llenos de widgets para mostrar la información. Vamos a repasar los diferentes widgets del dashboard por defecto y detallar su información.
+
+De izquierda a derecha, empecemos con el widget de Información del sistema:
+
+![Figura 1.18 - Widget de información del sistema](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_018.jpg)
+
+Figura 1.18 - Widget de información del sistema
+
+Este es el widget de Información del sistema, que como habrás adivinado te detalla toda la información del sistema. De esta manera, podemos mantener un ojo en lo que está pasando con nuestro servidor Zabbix y ver si nuestro Zabbix está funcionando. Vamos a repasar los parámetros:
+
+* **El servidor Zabbix se está ejecutando**: Nos informa de si el backend del servidor Zabbix se está ejecutando realmente y dónde se está ejecutando. En este caso, se está ejecutando en `localhost:10051`.
+* **Número de hosts**: Esto detallará el número de hosts **habilitados** (`11`), el número de hosts **deshabilitados** (`0`), y el número de **plantillas** que tenemos (`235`). Nos da una visión rápida de la información del host de nuestro servidor Zabbix.
+* **Número de items**: Aquí podemos ver los detalles de los items de nuestro servidor Zabbix, en este caso, **habilitados** (`287`), **deshabilitados** (`0`) y **no soportados** (`35`).
+* **Número de triggers**: Detalla el número de trigger. Podemos ver cuántos están **activados** (`120`) y **desactivados** (`0`), pero también cuántos están en estado **problemático** (`8`) y cuántos están en estado **correcto** (`112`).
+* **Número de usuarios (en línea)**: El primer valor detalla el número total de usuarios. El segundo valor detalla el número de usuarios conectados actualmente al frontend de Zabbix.
+* **Rendimiento requerido del servidor, nuevos valores por segundo**: Quizás le esté presentando un concepto completamente nuevo aquí, que es **Nuevos Valores por Segundo**, o **NVPS**. Un servidor recibe o solicita valores a través de elementos y los escribe en nuestra base de datos MariaDB (u otra base de datos). La información NVPS detallada aquí muestra el número estimado de NVPS recibidos por el servidor Zabbix. Mantenga un ojo en esto a medida que su servidor Zabbix crece, ya que es un buen indicador para ver qué tan rápido debe escalar.
+* **Cluster de alta disponibilidad**: Si está ejecutando un clúster de alta disponibilidad del servidor Zabbix, verá si está habilitado aquí y cuál es el retardo de conmutación por error. Además, la **página de información del sistema** mostrará información adicional de alta disponibilidad.
+
+También puede ver tres valores adicionales aquí dependiendo de su configuración:
+
+* **Tablas del historial de la base de datos actualizadas**: Si ves esto, está indicando que una de las tablas del historial de tu base de datos aún no se ha actualizado. Las tablas numéricas (flotantes) se han ampliado para permitir que se guarden más caracteres por punto de datos. Esta tabla no se actualiza automáticamente al pasar de Zabbix 4 a 5 o superior, ya que no todo el mundo la necesita y puede llevar mucho tiempo actualizarla.
+* **Nombre de la base de datos**: Si ve el nombre de su base de datos con el valor de su versión podría indicar que está ejecutando una versión de base de datos no soportada. Podrías ver un mensaje como `¡Atención! Versión del servidor de base de datos nombre no soportada. Debe ser al menos <VERSION DE LA BASE DE DATOS>`.
+
+Ahora, ese es uno de los widgets más importantes cuando se trata de su servidor Zabbix y es un gran uno para mantener en su tablero de instrumentos principal si usted me pregunta.
+
+Pasemos al siguiente widget, Host availability:
+
+![Figura 1.19 - Widget de disponibilidad del host](Figura 1.19 - Widget de disponibilidad del host)
+
+Figura 1.19 - Widget de disponibilidad del host
+
+El widget **Disponibilidad del host** es un widget de vista rápida que muestra todo lo que quieres saber sobre el estado de disponibilidad del host monitorizado. En este widget, se muestra si el host está **Disponible**, **No Disponible** o **Desconocido**. De esta manera, obtienes una buena visión general de la disponibilidad de todos los hosts que podrías estar monitorizando con tu servidor Zabbix en un único widget.
+
+Además de eso, también le muestra cuántos hosts tienen actualmente un disparador en un determinado estado. Hay varias severidades por defecto en Zabbix:
+
+* Catástrofes (**Disaster**)
+* Alta (**High**)
+* Media (**Average**)
+* Alerta (**Warning**)
+* Información (**Information**)
+* No clasificada (**Not classified**)
+
+Podemos personalizar completamente los niveles de gravedad y los colores; por ejemplo, qué niveles de gravedad queremos poner en qué disparadores. Por lo tanto, si usted está preocupado acerca de la gravedad en este momento, no se; vamos a llegar a eso más tarde.
+
+**Sugerencia**
+
+Personalizar los niveles de gravedad y los colores puede ser muy útil para su organización. Podemos personalizar los niveles de gravedad para que coincidan con los niveles utilizados en toda nuestra empresa o incluso para que coincidan con algunos de nuestros otros sistemas de monitoreo utilizados.
+
+El siguiente widget es Local:
+
+![Figura 1.20 - El widget Local, indicando una hora](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_020.jpg)
+
+Figura 1.20 - El widget Local, indicando una hora
+
+Es un reloj con la hora local del sistema Linux. ¿Necesito decir más? Pasemos al widget Problemas:
+![Figura 1.21 - Uno de los widgets de problemas disponibles](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_021.jpg)
+
+Figura 1.21 - Uno de los widgets de problemas disponibles
+
+Este es un widget interesante que utilizo mucho. Vemos nuestros problemas actuales en esta pantalla, así que si tenemos nuestros disparadores configurados correctamente, obtenemos información valiosa aquí. Una visión rápida de cuántos hosts están teniendo problemas es una cosa, pero la página de Problemas también nos da más detalles sobre el problema:
+
+* **Hora**: Hora a la que el servidor de Zabbix detectó el problema.
+* **Info**: Información sobre el evento, con los estados Manual close y Suppressed representados aquí.
+* **Host**: En qué host ocurrió este problema.
+* **Problema/Severidad**: Cuál es el problema y su gravedad. La gravedad se muestra en un color, en este caso, naranja significa Media.
+* **Duración**: Cuánto tiempo ha durado el problema.
+* **Reconocimiento**: Si este problema ha sido reconocido o no por usted o por otro usuario de Zabbix.
+* **Acciones**: Qué acciones se han llevado a cabo tras producirse este problema, por ejemplo, un script personalizado que se ejecuta al crearse el problema. Si pasa el ratón sobre cualquier acción, le mostrará información detallada sobre todas las acciones que se han tomado para este problema.
+* **Etiquetas**: Qué etiquetas se han asignado a este problema.
+
+![Figura 1.22 - Pantalla Editar widget](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_022.png)
+
+Figura 1.22 - Pantalla Editar widget
+
+**Sugerencia**
+
+Podemos ocultar los niveles de gravedad de estos widgets para asegurarnos de que sólo vemos los importantes. A veces, no queremos ver problemas de gravedad informativa en nuestros cuadros de mando; puede distraernos de un problema más importante. Mantenga sus cuadros de mando limpios personalizando el widget en toda su extensión.
+
+Ahora, hay dos widgets más que están completamente vacíos en nuestro dashboard por defecto. Se trata de los widgets Mapas favoritos y Gráficos favoritos. Estos widgets se pueden rellenar con un enlace rápido a tus mapas y gráficos favoritos, respectivamente, ofreciéndote una forma rápida de acceder a ellos sin tener que hacer clic a través de los menús:
+
+![Figura 1.23 - Los widgets Favoritos](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_023.jpg)
+
+Figura 1.23 - Los widgets Favoritos
+
+Ahora ya sabemos cómo trabajar con el frontend de Zabbix y podemos continuar más adelante con cómo navegar por nuestra instancia.
