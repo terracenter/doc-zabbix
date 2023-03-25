@@ -953,7 +953,7 @@ La pestaña Administración contiene las siguientes páginas:
 * **User roles**: Aquí es posible configurar diferentes roles de usuario, para limitar o ampliar ciertas funcionalidades del frontend a determinados usuarios.
 * **Users**: Añade usuarios a esta página.
 * **Media types**: Hay varios tipos de medios preconfigurados en Zabbix, que ya encontrarás aquí. También podemos añadir tipos de medios personalizados.
-* **Scripts**: Aquí es donde podemos añadir scripts personalizados, para extender la funcionalidad de Zabbix en el frontend.
+* **Scripts**: Aquí es donde podemos añadir scripts personalizados, para extender**** la funcionalidad de Zabbix en el frontend.
 * **Queue**: Aquí puedes ver la cola de tu servidor Zabbix. Los elementos pueden estar atascados en una cola debido a la recopilación de datos o problemas de rendimiento.
 
   **Consejo**
