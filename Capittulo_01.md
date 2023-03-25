@@ -1,4 +1,4 @@
-1. Capítulo 1: Instalando Zabbix y Empezando a Usar el Frontend
+## 1. Capítulo 1: Instalando Zabbix y Empezando a Usar el Frontend
 
 Zabbix 6 es como una continuación de Zabbix 5, ya que esta vez no estamos viendo grandes cambios en la interfaz de usuario. Sin embargo, en Zabbix 6, usted todavía encontrará un montón de mejoras, tanto en la interfaz de usuario y componentes básicos. Por ejemplo, la introducción de alta disponibilidad para el servidor Zabbix. Detallaremos todos los cambios importantes a lo largo del libro.
 
@@ -139,10 +139,6 @@ curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash -s -- --mari
     ```
 
     Debian
-
-    ```bash
-    zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql -u zabbix -p zabbix
-    ```
 
     **Nota importante**
 
@@ -839,3 +835,131 @@ Ahora, hay dos widgets más que están completamente vacíos en nuestro dashboar
 Figura 1.23 - Los widgets Favoritos
 
 Ahora ya sabemos cómo trabajar con el frontend de Zabbix y podemos continuar más adelante con cómo navegar por nuestra instancia.
+
+---
+
+## Navegando por el frontend
+
+Navegar por el frontend de Zabbix es más fácil de lo que parece a primera vista, especialmente con algunos de los increíbles cambios realizados en la interfaz de usuario a partir de Zabbix 5.0. Vamos a explorar la interfaz de navegación de Zabbix un poco más en esta receta mirando la barra de navegación y lo que tiene que ofrecer.
+
+### Preparándonos
+
+Ahora que hemos visto la primera página después de iniciar sesión con el dashboard por defecto, es el momento de empezar a navegar a través de la interfaz de usuario de Zabbix y ver algunas de las otras páginas disponibles. Nos moveremos por la barra lateral y exploraremos las páginas disponibles en nuestra instalación de Zabbix para que cuando empecemos a monitorizar nuestras redes y aplicaciones, sepamos dónde podemos encontrarlo todo.
+
+Por lo tanto, antes de continuar, asegúrese de que tiene el servidor Zabbix listo como se configura en las recetas anteriores.
+
+### Cómo hacerlo...
+
+La barra de navegación de Zabbix es la puerta de entrada a todas nuestras potentes herramientas y ajustes de configuración. Zabbix utiliza una barra de navegación en el lado izquierdo para mantener nuestra interfaz de usuario lo más limpia posible. Además, han hecho desaparecer la barra lateral para que podamos ver de cerca todo nuestro contenido, sin que la barra lateral bloquee nuestra visión.
+
+**Consejo**
+
+No podemos cambiar la ubicación del menú de navegación de Zabbix, pero es posible ocultarlo a una forma más pequeña u ocultarlo completamente. Si desea ocultar (o no) la barra de navegación, haga clic en el primer icono situado a la derecha del logotipo de Zabbix. Si desea ocultar completamente la barra de navegación, haga clic en el segundo icono a la derecha del logotipo de Zabbix.
+
+Echemos un vistazo a la barra lateral de Zabbix como la vemos desde nuestra página por defecto y conozcámosla. Por favor, siga en el frontend haciendo clic y comprobando el contenido mencionado:
+![Figura 1.24 - La página por defecto de Zabbix vista en su propio navegador web](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_017.jpg)
+
+Figura 1.24 - La página por defecto de Zabbix vista en su propio navegador web
+
+Aquí tenemos algunas categorías para elegir, y un nivel por debajo de las categorías, tenemos nuestras diferentes páginas. Primero, empecemos detallando las categorías:
+
+* **Monitoring**: La categoría Monitoreo es donde podemos encontrar toda la información sobre nuestros datos recolectados. Es básicamente la categoría que desea utilizar cuando se está trabajando con Zabbix para leer cualquier información recopilada que ha trabajado duro para adquirir.
+* **Services**: La categoría Servicios es nueva en Zabbix 6 y viene como parte de las características mejoradas de Monitorización de Servicios de Negocio. Podemos encontrar toda la información relativa a la monitorización de servicios y SLAs aquí.
+* **Inventory**: La categoría de Inventario es una característica adicional interesante en Zabbix que podemos utilizar para ver nuestra información de inventario relacionada con el host. Puedes añadir cosas como versiones de software o números de serie a los hosts y verlos aquí.
+* **Reports**: La categoría Informes contiene una variedad de informes predefinidos y personalizables por el usuario centrados en mostrar una visión general de parámetros como información del sistema, disparadores y datos recopilados.
+* **Configuration**: La categoría Configuración es donde construimos todo lo que queremos ver en Monitorización, Inventario e Informes. Podemos editar nuestra configuración para adaptarla a cada una de nuestras necesidades para que Zabbix pueda mostrarnos esos datos de forma útil.
+* **Administration**: La categoría Administración es donde administramos el servidor Zabbix. Aquí encontrarás todas las configuraciones del servidor para que tú y tus compañeros tengáis una buena experiencia de trabajo con Zabbix.
+
+Vas a repasarlas bastante mientras utilices este libro, así que recuérdalas bien. Profundicemos un poco más en las categorías examinándolas una a una. Empecemos por la categoría Monitorización:
+![Figura 1.25 - Sección Supervisión de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_025.jpg)
+
+Figura 1.25 - Sección Monitoring de la barra lateral
+
+La pestaña **Monitoring** contiene las siguientes páginas:
+
+* **Dashboard**: Aquí es donde encontraremos el Dashboard por defecto que mostramos en la Figura 1.24. También es donde podemos añadir muchos más Dashboard para todo lo que se nos ocurra.
+* **Problems**: Aquí podemos ver en detalle nuestro problema actual. Se nos proporcionan un montón de opciones de filtro para acotar nuestra búsqueda de problemas si es necesario.
+* **Hosts**: Hosts proporcionará una visión rápida de lo que está pasando con los hosts. También proporciona enlaces para navegar a páginas que muestran los datos de nuestros hosts.
+* **Latest data**: Esta es una página que vamos a utilizar bastante a lo largo de nuestra vida profesional en Zabbix. La página de últimos datos es donde podemos encontrar los valores recogidos para cada host, que por supuesto podemos filtrar.
+* **Maps**: Los mapas son una herramienta muy útil en Zabbix para obtener una visión general de su infraestructura. Podemos utilizarlos para la visión general de la red y similares.
+* **Discovery**: Esta página nos proporciona una visión general de los dispositivos descubiertos. Trabajaremos más en esto más adelante.
+
+A continuación, tenemos la categoría **Services**:
+![Figura 1.26 - Sección Servicios de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_026.jpg)
+
+Figura 1.26 - Sección Services de la barra lateral
+
+Esta parte de la barra lateral contiene las siguientes páginas:
+
+* **Services**: Aquí es donde configuramos todos nuestros servicios que queremos monitorizar.
+* **Service actions**: La sección donde podemos configurar cualquier acción para nuestros servicios configurados. Encontraremos opciones como enviar nuestras notificaciones por SLAs y más.
+* **SLA**: Aquí podemos configurar cualquier SLA que luego podremos utilizar en nuestros servicios.
+* SLA report**: Un resumen detallado de los servicios configurados con sus SLAs y si se están cumpliendo o no.
+
+A continuación, tenemos la categoría **Inventory**:
+![Figura 1.27 - La sección Inventario de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_027.jpg)
+
+Figura 1.27 - La sección **Inventory** de la barra lateral
+
+La pestaña Inventario contiene las siguientes páginas:
+
+* **Overview**: Una página de resumen rápido para la información de su inventario.
+* **Hosts**: Una vista más detallada de los valores de inventario por host.
+
+A continuación, tenemos la categoría **Reports**:
+
+![Figura 1.28 - La sección Informes de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_028.jpg)
+
+Figura 1.28 - La sección **Reports** de la barra lateral
+
+La pestaña Informes contiene las siguientes páginas:
+
+* **System information**: Aquí puedes consultar la información del sistema; contiene la misma información que el widget Información del sistema.
+* **Scheduled reports**: Aquí es donde configuramos cualquier informe automático en PDF que queramos enviar.
+* **Availability report**: En esta página, podemos ver el porcentaje de tiempo que un trigger ha estado en estado problemático en comparación con el estado correcto. Esta es una forma útil de ver durante cuánto tiempo determinados elementos están realmente sanos.
+* **Triggers top 100**: Los 100 triggers que más veces han cambiado de estado dentro de un periodo de tiempo.
+* **Audit**: Aquí podemos ver quién ha cambiado qué en nuestro servidor Zabbix. Es una buena forma de ver qué compañero te ha bloqueado por accidente o si ha sido a propósito.
+* **Action log**: Podemos ver una lista de las acciones que se han realizado, por ejemplo, debido a que los disparadores han pasado a estado problema o ok.
+* **Notifications**: En esta página podemos ver el número de notificaciones enviadas a nuestros usuarios.
+
+A continuación, tenemos la categoría **Configuration**:
+
+![Figura 1.29 - Sección Configuración de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_029.jpg)
+
+Figura 1.29 - Sección **Configuration** de la barra lateral
+
+La pestaña **Configuration** contiene las siguientes páginas:
+
+* **Host groups**: Aquí configuramos nuestros grupos de hosts; por ejemplo, un grupo para todos los servidores Linux.
+* **Templates**: Aquí configuramos nuestras plantillas que podemos utilizar para monitorizar hosts desde el servidor Zabbix.
+* **Hosts**: Otra pestaña de hosts, pero esta vez no es para comprobar los datos. Aquí es donde añadimos y configuramos los hosts.
+* **Maintenance**: En Zabbix tenemos la disponibilidad de establecer periodos de mantenimiento; de esta forma, los disparadores o notificaciones no te molestarán mientras desconectas algo para mantenimiento, por ejemplo.
+* **Actions**: ¿Recuerdas que mencioné que podemos configurar acciones para cuando un disparador cambia de estado? Aquí es donde configuramos esas acciones.
+* **Event correlation**: Aquí podemos correlacionar problemas para reducir el ruido o prevenir tormentas de eventos. Esto se consigue cerrando problemas nuevos o antiguos cuando se correlacionan con otros problemas.
+* **Discovery**: Aquí es donde configuramos el descubrimiento de Zabbix para la creación automática de hosts.
+
+Por último, tenemos la categoría **Administration**:
+
+![Figura 1.30 - La sección Administración de la barra lateral](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_01_030.jpg)
+
+Figura 1.30 - La sección Administración de la barra lateral
+
+La pestaña Administración contiene las siguientes páginas:
+
+* **General**: La página general contiene la configuración de nuestro servidor Zabbix. Aquí se encuentran ajustes que van desde el housekeeper hasta el tema del frontend.
+* **Proxies**: Aquí es donde configuramos los proxies que deben conectarse a este servidor Zabbix.
+* **Authentication**: Aquí podemos encontrar nuestra configuración de autenticación, como LDAP, SAML y HTTP.
+* **User groups**: Aquí es donde configuramos los grupos de usuarios y los permisos para estos grupos de usuarios.
+* **User roles**: Aquí es posible configurar diferentes roles de usuario, para limitar o ampliar ciertas funcionalidades del frontend a determinados usuarios.
+* **Users**: Añade usuarios a esta página.
+* **Media types**: Hay varios tipos de medios preconfigurados en Zabbix, que ya encontrarás aquí. También podemos añadir tipos de medios personalizados.
+* **Scripts**: Aquí es donde podemos añadir scripts personalizados, para extender la funcionalidad de Zabbix en el frontend.
+* **Queue**: Aquí puedes ver la cola de tu servidor Zabbix. Los elementos pueden estar atascados en una cola debido a la recopilación de datos o problemas de rendimiento.
+
+  **Consejo**
+
+  Cuando se utiliza la autenticación Zabbix como HTTP, LDAP o SAML, todavía tenemos que crear nuestros usuarios internamente con los permisos adecuados. Configure sus usuarios para que coincidan con el nombre de usuario de su método de autenticación en Zabbix y utilice el método de autenticación para la gestión de contraseñas. Mantente atento al siguiente caso de Zabbix para ver actualizaciones sobre la implementación o dejar un voto:
+
+  https://support.zabbix.com/browse/ZBXNEXT-276
+
+---
