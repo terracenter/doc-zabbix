@@ -1,4 +1,4 @@
-### Capítulo 3: Configuración de la monitorización de Zabbix
+****### Capítulo 3: Configuración de la monitorización de Zabbix
 
 Zabbix está construido para ser flexible y debe ser capaz de monitorizar casi cualquier cosa que pueda necesitar. En este capítulo, vamos a aprender más acerca de cómo trabajar con Zabbix para construir un montón de diferentes opciones para la monitorización. Vamos a ir sobre ellos receta por receta, por lo que va a terminar con una sólida comprensión de cómo funcionan. Cubriremos las siguiente**s** recetas sobre los diferentes tipos de monitorización:
 
@@ -684,7 +684,7 @@ Hay un montón de aplicaciones que pueden ser monitorizadas a través de Zabbix 
 
 ---
 
-## Configuración de la supervisión de bases de datosConfiguración de la supervisión de bases de datos
+## Configuración de la supervisión de bases de datos Configuración de la supervisión de bases de datos
 
 Las bases de datos son un agujero negro para muchos ingenieros: se escriben datos en ellas y se hace algo con ellos. ¿Pero qué pasa si quieres saber más sobre la salud de tu base de datos? Ahí es donde entra en juego la monitorización de bases de datos de Zabbix: podemos utilizarla para monitorizar la salud de nuestra base de datos.
 
@@ -697,41 +697,45 @@ Vamos a monitorizar nuestra base de datos Zabbix, por comodidad. Esto significa 
 Antes de empezar con la configuración del elemento, tendremos que hacer algunas cosas en el lado CLI del servidor:
 
 1. Empecemos por instalar los módulos necesarios en nuestro servidor.
-   Sistemas basados en RHEL:
 
-```bash
-dnf install unixODBC mariadb-connector-odbc
-```
+   Sistemas basados en **RHEL**:
 
-Sistemas Ubuntu:
+   ```bash
+   dnf install unixODBC mariadb-connector-odbc
+   ```
 
-```bash
-apt install odbc-mariadb unixodbc unixodbc-dev odbcinst
-```
+   Sistemas **Ubuntu**:
 
+   ```bash
+   apt install odbc-mariadb unixodbc unixodbc-dev odbcinst
+   ```
 2. Ahora vamos a comprobar si existen nuestros archivos de configuración de Open Database Connectivity (ODBC):
+
+   ```bash
+   odbcinst -j   
+   ```
+
    El resultado debería ser el siguiente:
 
-```bash
-unixODBC 2.3.7
-DRIVERS............: /etc/odbcinst.ini
-SYSTEM DATA SOURCES: /etc/odbc.ini
-FILE DATA SOURCES..: /etc/ODBCDataSources
-USER DATA SOURCES..: /root/.odbc.ini
-SQLULEN Size.......: 8
-SQLLEN Size........: 8
-SQLSETPOSIROW Size.: 8
-```
-
+   ```
+   unixODBC 2.3.7
+   DRIVERS............: /etc/odbcinst.ini
+   SYSTEM DATA SOURCES: /etc/odbc.ini
+   FILE DATA SOURCES..: /etc/ODBCDataSources
+   USER DATA SOURCES..: /root/.odbc.ini
+   SQLULEN Size.......: 8
+   SQLLEN Size........: 8
+   SQLSETPOSIROW Size.: 8
+   ```
 3. Si la salida es correcta, podemos ir a la CLI de Linux y continuar editando odbc.ini para conectarnos a nuestra base de datos:
 
-```bash
-vim /etc/odbc.ini
-```
+   ```bash
+   vim /etc/odbc.ini
+   ```
 
 Ahora rellene la información de su base de datos Zabbix. Se verá así:
 
-```bash
+```
 [book]
 Description = MySQL book test database
 Driver      = mariadb
@@ -741,42 +745,33 @@ Database    = zabbix
 ```
 
 4. Ahora vamos a probar si nuestra conexión funciona como esperábamos ejecutando esto:
-
-```bash
-isql -v book
-```
+   ```bash
+   isql -v book
+   ```
 
 Deberías recibir un mensaje diciendo Conectado; si no es así, comprueba tus archivos de configuración e inténtalo de nuevo.
 
-5. Ahora vamos al frontend de Zabbix para configurar nuestra primera comprobación de base de datos. Vaya a **Configuration** | **Hosts** y haga clic en el host llamado `lar-book-centos`, o todavía podría ser llamado servidor Zabbix. Ahora vaya a Elementos; queremos crear un nuevo elemento aquí haciendo clic en el botón Crear elemento.
+5. Ahora vamos al frontend de Zabbix para configurar nuestra primera comprobación de base de datos. Vaya a **Configuration** | **Hosts** y haga clic en el host llamado `lar-book-centos`, o todavía podría ser llamado servidor Zabbix. Ahora vaya a **Items**; queremos crear un nuevo elemento aquí haciendo clic en el botón **Create item**.
 
-**Consejo**
-
-Si aún no lo has hecho, una gran manera de mantener tu Zabbix estructurado es mantener todos los nombres de host en Zabbix iguales al nombre real del servidor. Cambie el nombre de su servidor Zabbix por defecto en el frontend a lo que realmente ha llamado a su servidor.
+   **Consejo**
+   Si aún no lo has hecho, una gran manera de mantener tu Zabbix estructurado es mantener todos los nombres de host en Zabbix iguales al nombre real del servidor. Cambie el nombre de su servidor Zabbix por defecto en el frontend a lo que realmente ha llamado a su servidor.
 
 Queremos añadir un elemento con los siguientes parámetros:
 
 ![Figura 3.48 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_048.jpg)
-
-<p>Figura 3.48 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix</p>
+Figura 3.48 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix
 
 6. Asegúrese también de añadir una etiqueta al elemento:
-
-![Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_049.jpg)
-
-<p>Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas</p>
+   ![Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_049.jpg)
+Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas
 
 7. Ahora haga clic en el botón **Add** y haga clic en el nombre del host para añadir las macros, como se indica a continuación:
-
-![Figura 3.50 - Página de configuración de macros de host Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_050.jpg)
-
+   ![Figura 3.50 - Página de configuración de macros de host Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_050.jpg)
 <p>Figura 3.50 - Página de configuración de macros de host Zabbix</p>
 
 8. Ahora si vamos a **Monitoring** | **Hosts** y pulsamos en Últimos datos para nuestro host, veremos esto:
-
-![Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_051.jpg)
-
-<p>Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix</p>
+   ![Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_051.jpg)
+   Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix
 
 Ahora podemos ver directamente desde la base de datos cuántos elementos se han escrito en ella.
 
