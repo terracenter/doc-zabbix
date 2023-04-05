@@ -573,7 +573,6 @@ chown zabbix:zabbix /usr/lib/zabbix/externalscripts/test_external
 4. Ahora estamos listos para ir a nuestro host para crear un nuevo elemento. Vaya a **Configuration** | **Hosts**, seleccione nuestro host, **lar-book-centos**, y haga clic en el botón **Create item**. Queremos que este item obtenga las siguientes variables:
    ![Figura 3.41 - Página de configuración de elementos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_041.jpg)
    Figura 3.41 - Página de configuración de elementos de Zabbix
-
 5. Después de añadir este nuevo elemento, naveguemos a **Monitoring** | **Hosts** y comprobemos la página **Latest data** para nuestro host. Deberíamos obtener nuestra variable Test devuelta por nuestro script como Último valor en Zabbix, como se muestra en la siguiente captura de pantalla:
 
 ![Figura 3.42 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_042.jpg)
@@ -620,21 +619,19 @@ Para configurar la monitorización JMX, vamos a añadir un host a nuestro servid
 
 1. Vamos a editar el archivo `zabbix_server.conf` iniciando sesión en nuestro servidor Zabbix y ejecutando el siguiente comando:
 
-```bash
-vim /etc/zabbix/zabbix_server.conf
-```
-
+   ```bash
+   vim /etc/zabbix/zabbix_server.conf
+   ```
 2. A continuación, tendremos que añadir las siguientes líneas a este archivo:
 
-```bash
-JavaGateway=127.0.0.1
-StartJavaPollers=5
-```
+   ```bash
+   JavaGateway=127.0.0.1
+   StartJavaPollers=5
+   ```
 
-**Consejo**
+   **Consejo**
 
-Es posible instalar su pasarela Java en un host separado de su Zabbix. De esta manera podemos repartir la carga y escalar más fácilmente. Simplemente instálelo en un host separado y añada la dirección IP de ese host al parámetro JavaGateway. No haremos esto en el ejemplo, sino que mantendremos la configuración de la pasarela Java en el propio host del servidor Zabbix.
-
+   Es posible instalar su pasarela Java en un host separado de su Zabbix. De esta manera podemos repartir la carga y escalar más fácilmente. Simplemente instálelo en un host separado y añada la dirección IP de ese host al parámetro JavaGateway. No haremos esto en el ejemplo, sino que mantendremos la configuración de la pasarela Java en el propio host del servidor Zabbix.
 3. También tendremos que instalar la aplicación zabbix-java-gateway en nuestro servidor Zabbix con el siguiente comando.
 
 Sistemas basados en RHEL:
@@ -662,22 +659,22 @@ Eso es todo lo que tenemos que hacer en el lado del servidor de las cosas para o
 A continuación, vamos a añadir un host con la siguiente configuración:
 
 ![Figura 3.44 - Página de configuración de elementos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_044.jpg)
+Figura 3.44 - Página de configuración de elementos de Zabbix
 
-<p>Figura 3.44 - Página de configuración de elementos de Zabbix</p>
-
-Después de esto, nuestro icono JMX debería volverse verde; comprobémoslo en **Monitoring** | **Hosts**. Debería verse así:
+5. Después de esto, nuestro icono JMX debería volverse verde; comprobémoslo en **Monitoring** | **Hosts**. Debería verse así:
+   ![Figura 3.45 - Página Zabbix Monitoring | Hosts](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_045.jpg)
+   Figura 3.45 - Página Zabbix Monitoring | Hosts
+6. Si pulsamos sobre **Latest data** para nuestro nuevo host monitorizado por **JMX**, deberíamos ver también nuestros datos entrantes. Compruébalo; debería devolver estadísticas como estas:
 
 ![Figura 3.46 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_046.jpg)
-
-<p>Figura 3.46 - Página de últimos datos de Zabbix</p>
+Figura 3.46 - Página de últimos datos de Zabbix
 
 ### Cómo funciona...
 
 Zabbix utiliza una pasarela Java alojada en el propio servidor Zabbix o en otro servidor (proxy) para monitorizar aplicaciones JMX:
 
 ![Figura 3.47 - Diagrama de comunicación entre el servidor Zabbix y Java](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_047.jpg)
-
-<p>Figura 3.47 - Diagrama de comunicación entre el servidor Zabbix y Java</p>
+Figura 3.47 - Diagrama de comunicación entre el servidor Zabbix y Java
 
 Zabbix sondea la pasarela Java y ésta, a su vez, se comunica con nuestra aplicación JMX, como lo hace con Tomcat en nuestro ejemplo. Los datos a su vez son devueltos a través de la misma ruta y podemos ver nuestros datos en nuestro servidor Zabbix.
 
