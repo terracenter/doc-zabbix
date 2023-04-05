@@ -223,42 +223,39 @@ Monitorizar mediante SNMP polling es fácil y muy potente. Empezaremos configura
 1. Empecemos emitiendo los siguientes comandos para instalar SNMP en nuestro host.
    Para sistemas basados en RHEL:
 
-```bash
-dnf install net-snmp net-snmp-utils
-```
+   ```bash
+   dnf install net-snmp net-snmp-utils
+   ```
 
-Para sistemas Ubuntu:
+   Para sistemas Ubuntu:
 
-```bash
-apt install snmp snmpd libsnmp-dev
-```
-
+   ```bash
+   apt install snmp snmpd libsnmp-dev
+   ```
 2. Ahora, vamos a crear el nuevo usuario SNMPv3 que utilizaremos para monitorizar nuestro host. Tenga en cuenta que vamos a utilizar contraseñas inseguras, pero asegúrese de utilizar contraseñas seguras para sus entornos de producción. Emita el siguiente comando:
 
-```bash
-net-snmp-create-v3-user -ro -a my_authpass -x my_privpass -A SHA -X AES snmpv3user
-```
+   ```bash
+   net-snmp-create-v3-user -ro -a my_authpass -x my_privpass -A SHA -X AES snmpv3user
+   ```
 
 Esto creará un usuario SNMPv3 con el nombre de usuario `snmpv3user`, la contraseña de autenticación `my_authpass`, y la contraseña de privilegios `my_ privpass`.
 
 3. Asegúrate de editar el archivo de configuración SNMP para permitirnos leer todos los objetos SNMP:
 
-```bash
-vim /etc/snmp/snmpd.conf
-```
-
+   ```bash
+   vim /etc/snmp/snmpd.conf
+   ```
 4. Añade la siguiente línea en el resto de las líneas de la `view systemview`:
 
-```
-view    systemview    included   .1
-```
-
+   ```
+   view    systemview    included   .1
+   ```
 5. Ahora inicie y habilite el demonio snmpd para permitirnos empezar a monitorizar este servidor:
 
-```bash
-systemctl enable snmpd
-systemctl start snmpd
-```
+   ```bash
+   systemctl enable snmpd
+   systemctl start snmpd
+   ```
 
 Esto es todo lo que necesitamos hacer en el lado del host Linux; ahora podemos ir al frontend de Zabbix para configurar nuestro host. Vaya a **Configuration** | **Hosts** en su frontend Zabbix y haga clic en Crear host en la esquina superior derecha.
 
@@ -573,27 +570,23 @@ echo $1
 chown zabbix:zabbix /usr/lib/zabbix/externalscripts/test_external
 ```
 
-4. Ahora estamos listos para ir a nuestro host para crear un nuevo elemento. Vaya a **Configuration** | **Hosts**, seleccione nuestro host,** lar-book-centos**, y haga clic en el botón **Create item**. Queremos que este item obtenga las siguientes variables:
+4. Ahora estamos listos para ir a nuestro host para crear un nuevo elemento. Vaya a **Configuration** | **Hosts**, seleccione nuestro host, **lar-book-centos**, y haga clic en el botón **Create item**. Queremos que este item obtenga las siguientes variables:
    ![Figura 3.41 - Página de configuración de elementos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_041.jpg)
-
-<p>Figura 3.41 - Página de configuración de elementos de Zabbix</p>
+   Figura 3.41 - Página de configuración de elementos de Zabbix
 
 5. Después de añadir este nuevo elemento, naveguemos a **Monitoring** | **Hosts** y comprobemos la página **Latest data** para nuestro host. Deberíamos obtener nuestra variable Test devuelta por nuestro script como Último valor en Zabbix, como se muestra en la siguiente captura de pantalla:
 
 ![Figura 3.42 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_042.jpg)
-
-<p>Figura 3.42 - Página de últimos datos de Zabbix</p>
+Figura 3.42 - Página de últimos datos de Zabbix
 
 **Sugerencia**
-
 Utilice las macros del frontend como variables para enviar datos desde su frontend a sus scripts. Puede automatizar aún más sus comprobaciones con esto para mejorar sus comprobaciones externas.
 
 ### Cómo funciona...
 
 Las comprobaciones externas parecen tener una curva de aprendizaje empinada, pero en realidad son bastante simples desde el lado de Zabbix. Todo lo que hacemos es enviar un comando a un script externo y esperar un resultado:
 ![Figura 3.43 - Diagrama de comunicación del script externo del servidor Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_043.jpg)
-
-<p>Figura 3.43 - Diagrama de comunicación del script externo del servidor Zabbix</p>
+Figura 3.43 - Diagrama de comunicación del script externo del servidor Zabbix
 
 Como en nuestro ejemplo, enviamos el valor Test a nuestro script, el cual, a su vez, nos lo devuelve como $1.
 
