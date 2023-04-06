@@ -767,7 +767,6 @@ Figura 3.48 - Página de configuración de elementos Zabbix, elementos en la bas
 7. Ahora haga clic en el botón **Add** y haga clic en el nombre del host para añadir las macros, como se indica a continuación:
    ![Figura 3.50 - Página de configuración de macros de host Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_050.jpg)
    Figura 3.50 - Página de configuración de macros de host Zabbix
-
 8. Ahora si vamos a **Monitoring** | **Hosts** y pulsamos en **Latest data** para nuestro host, veremos esto:
    ![Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_051.jpg)
    Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix
@@ -816,19 +815,17 @@ Figura 3.53 - Página de configuración de Zabbix Item, recuento de visitantes e
 ![Figura 3.54 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com, parte inferior de la página](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_054.jpg)
 Figura 3.54 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com, parte inferior de la página
 
-
 4. También necesitaremos añadir una etiqueta a este elemento.
 
 ![Figura 3.55 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_055.jpg)
 Figura 3.55 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Etiquetas
 
 5. Utilice los siguientes pasos de preprocesamiento:
-![Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_056.jpg)
-Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento
-
+   ![Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_056.jpg)
+   Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento
 6. Ahora navegue a **Monitoring** | **Hosts** y abra la página Últimos datos para nuestro host `lar-book-agent_simple`. Si todo está funcionando como debería, ahora deberíamos estar solicitando el recuento de visitantes de esta página cada 15 minutos de la siguiente manera:
-![Figura 3.57 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_057.jpg)
-Figura 3.57 - Página de últimos datos de Zabbix
+   ![Figura 3.57 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_057.jpg)
+   Figura 3.57 - Página de últimos datos de Zabbix
 
 ### Cómo funciona...
 
@@ -842,7 +839,7 @@ Todo lo que queda es el número, listo para que lo utilicemos en gráficos y otr
 
 ---
 
-## Usando el preprocesado de Zabbix para alterar los valores de los ítems
+## Uso del preprocesamiento de Zabbix para modificar los valores de los elementos
 
 El preprocesamiento de valores de ítems es una funcionalidad importante en Zabbix; podemos usarla para crear todo tipo de comprobaciones. Ya hemos hecho algo de preprocesamiento en este capítulo, pero vamos a profundizar un poco más en él y en lo que hace.
 
@@ -854,103 +851,73 @@ Vamos a necesitar un servidor Zabbix para crear nuestra comprobación. También 
 
 1. Vamos a empezar por iniciar sesión en nuestro frontend Zabbix e ir a **Configuration** | **Hosts**.
 2. Haz clic en el host de tu servidor Zabbix; en mi caso, se llama `lar-book-centos`.
-3. Ahora ve a Items y haz clic en el botón azul Create item en la esquina superior derecha. Vamos a crear un nuevo elemento con la siguiente información:
+3. Ahora ve a Items y haz clic en el botón azul **Create item** en la esquina superior derecha. Vamos a crear un nuevo elemento con la siguiente información:
    ![Figura 3.59 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico desde CLI](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_059.jpg)
-
-Figura 3.59 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico desde CLI</p>
-
+   Figura 3.59 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico desde CLI</p>
 4. No olvide añadir su etiqueta:
    ![Figura 3.60 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_060.jpg)
-
-Figura 3.60 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas
-
+   Figura 3.60 - Pantalla de creación de nuevo elemento, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas
 5. Asegúrese de cambiar `ens192` a su propia interfaz de red primaria. Puede encontrar su interfaz de red primaria iniciando sesión en la CLI de Linux y ejecutando lo siguiente:
 
    ```bash
     Ifconfig 
    ```
 6. De vuelta en la pantalla de creación de **item**, haga clic en el botón azul **Add**. Este item utilizará el agente de Zabbix para ejecutar un comando remoto en la CLI de Linux.
-7. Cuando navegamos a este nuevo item, podemos ver que el item se convierte en no soportado. Esto se debe a que cuando usamos la clave **system.run**, necesitamos permitirla en la configuración del agente de Zabbix:d
+7. Cuando navegamos a este nuevo item, podemos ver que el item se convierte en no soportado. Esto se debe a que cuando usamos la clave **system.run**, necesitamos permitirla en la configuración del agente de Zabbix:
 
    ![Figura 3.61 - Información de item system.run sistema métrico no admitida](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_061.jpg)
-
-Figura 3.61 - Información de item `system.run` sistema métrico no admitida
-
+   Figura 3.61 - Información de item `system.run` sistema métrico no admitida
 8. Acceda a la CLI Linux del host monitorizado y edite la configuración del agente Zabbix con esto:
 
-```bash
-vim /etc/zabbix/zabbix_agent2.conf
-
-```
-
+   ```bash
+   vim /etc/zabbix/zabbix_agent2.conf
+   ```
 9. Vaya a la línea Option: **AllowKey** y añada **AllowKey=system.run[*]** como se muestra aquí:
-
-![Figura 3.62 - Fichero de configuración del agente Zabbix, AllowKey=system.run[*]](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_062.jpg)
-
-Figura 3.62 - Fichero de configuración del agente Zabbix, AllowKey=system.run[*]
-
+   ![Figura 3.62 - Fichero de configuración del agente Zabbix, AllowKey=system.run[*]](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_062.jpg)
+   Figura 3.62 - Fichero de configuración del agente Zabbix, AllowKey=system.run[*]
 10. Guarde el archivo y reinicie el agente Zabbix con esto
 
 ```bash
-systemctl restart zabbix-agent2 
+systemctl restart zabbix-agent2
 ```
 
 11. De vuelta en el frontend de Zabbix, el error que notamos en el paso 7 debería desaparecer después de unos minutos.
 12. Navegue a **Monitoring** | **Latest data** y filtre en el host **lar-book-centos** de su servidor Zabbix y el nombre del nuevo item Obtener estadísticas de tráfico desde CLI.
-13. Ahora el valor debería ser extraído del host. Si hacemos clic en **History**, podemos ver el valor completo; debería tener el siguiente aspecto:![Figura 3.63 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_063.jpg)
-
-Figura 3.63 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192
-
+13. Ahora el valor debería ser extraído del host. Si hacemos clic en **History**, podemos ver el valor completo; debería tener el siguiente aspecto:
+    ![Figura 3.63 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_063.jpg)
+    Figura 3.63 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192
 14. La información que se ve en la imagen es demasiada para un solo item. Necesitamos dividirla. Usemos el preprocesado para obtener el número de bytes RX de la información.
 15. Vuelva a **Configuration** | **Hosts** y haga clic en el host de su servidor Zabbix. Vaya a **Items** de este host.
 16. Haga clic en el Item **Obtener estadísticas de tráfico de CLI** para editarlo. Cambie el nombre a `Total RX traffic in bytes for ens192` y añada `B` a Units, donde B significa bytes. Quedará así:
-
-![Figura 3.64 - Elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_064.jpg)
-
-Figura 3.64 - Elemento system.run del agente Zabbix
-
+    ![Figura 3.64 - Elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_064.jpg)
+    Figura 3.64 - Elemento system.run del agente Zabbix
 17. Añada su tag:
-
     ![Figura 3.65 - Pantalla de creación de nuevo item, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_065.jpg)
-
-Figura 3.65 - Pantalla de creación de nuevo item, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas
-
+    Figura 3.65 - Pantalla de creación de nuevo item, Obtener estadísticas de tráfico de CLI, pestaña Etiquetas
 18. Ahora haga clic en **Preprocessing** y pulse el botón subrayado **Add**.
 19. Se añadirá un campo de expresión regular (regex), que vamos a rellenar para que coincida con el número total de bytes de su interfaz. Rellene lo siguiente:
-
-![Figura 3.66 - Preprocesamiento del elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_066.jpg)
-
-Figura 3.66 - Preprocesamiento del elemento system.run del agente Zabbix
-
+    ![Figura 3.66 - Preprocesamiento del elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_066.jpg)
+    Figura 3.66 - Preprocesamiento del elemento system.run del agente Zabbix
 20. Asegúrese de seleccionar también la casilla **Custom on fail**.
 21. Hagamos clic de nuevo en el botón subrayado **Add** y utilicemos el menú desplegable de este nuevo paso para seleccionar **Discard unchanged**. El resultado final será el siguiente:
-
-![Figura 3.67 - Preprocesamiento del elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_067.jpg)
-
-Figura 3.67 - Preprocesamiento del elemento system.run del agente Zabbix
-
+    ![Figura 3.67 - Preprocesamiento del elemento system.run del agente Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_067.jpg)
+    Figura 3.67 - Preprocesamiento del elemento system.run del agente Zabbix
 22. Ahora podemos pulsar el botón azul Update para terminar de editar este elemento.
 23. Navegue de nuevo a **Monitoring** | **Latest data** y filtre sobre su host y el nuevo nombre del ítem, **Tráfico RX total en bytes para ens192**. Asegúrese de utilizar su propio nombre de interfaz.
 24. Ahora podemos ver nuestro valor entrando, y tenemos un elemento mostrando nuestro tráfico RX total para nuestra interfaz principal:
-
-![Figura 3.68 - Últimos datos del elemento de tráfico Zabbix Total RX](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_068.jpg)
-
-Figura 3.68 - Últimos datos del elemento de tráfico Zabbix Total RX
+    ![Figura 3.68 - Últimos datos del elemento de tráfico Zabbix Total RX](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_068.jpg)
+    Figura 3.68 - Últimos datos del elemento de tráfico Zabbix Total RX
 
 ### Cómo funciona...
 
 Ya hemos realizado algún preprocesamiento en la receta Trabajar con elementos calculados y dependientes para obtener datos de un elemento maestro. También hemos utilizado el preprocesamiento en la receta Configuración de la monitorización del agente HTTP para obtener un valor específico de una página web. Sin embargo, no hemos repasado los conceptos de preprocesamiento utilizados en esas recetas, así que vamos a repasarlos.
 
 Cuando se trabaja con preprocesamiento, es importante conocer la configuración básica. Echemos un vistazo a los datos entrantes antes de utilizar el preprocesamiento:
-
 ![Figura 3.69 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_063.jpg)
-
 Figura 3.69 - Comando system.run del agente Zabbix ejecutando los resultados de ifconfig ens192
 
 Esto es mucha información. Cuando nos fijamos en cómo se utilizan los elementos de Zabbix, tratamos de poner la información comprensible en un solo elemento. Por suerte, podemos preprocesar este elemento antes de almacenar el valor en Zabbix. En la siguiente figura, podemos ver los pasos de preprocesamiento que añadimos a nuestro elemento:
-
 ![Figura 3.70 - Preprocesamiento del elemento system.run del agente Zabbix con dos pasos](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_070.jpg)
-
 Figura 3.70 - Preprocesamiento del elemento system.run del agente Zabbix con dos pasos
 
 Nuestro primer paso es una regex. Este paso se asegurará de utilizar sólo los números que necesitamos. Hacemos coincidir la palabra **RX**, luego la palabra **bytes**, y una secuencia de números después de ellas. De esta manera, terminamos con el número total de bytes RX en el grupo de captura 2. Por eso rellenamos `\2` en el campo de salida. También especificamos **Custom on fail**, que descartará cualquier valor si la regex no coincide.
