@@ -763,13 +763,12 @@ Figura 3.48 - Página de configuración de elementos Zabbix, elementos en la bas
 
 6. Asegúrese también de añadir una etiqueta al elemento:
    ![Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_049.jpg)
-Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas
-
+   Figura 3.49 - Página de configuración de elementos Zabbix, elementos en la base de datos Zabbix, pestaña Etiquetas
 7. Ahora haga clic en el botón **Add** y haga clic en el nombre del host para añadir las macros, como se indica a continuación:
    ![Figura 3.50 - Página de configuración de macros de host Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_050.jpg)
-<p>Figura 3.50 - Página de configuración de macros de host Zabbix</p>
+   Figura 3.50 - Página de configuración de macros de host Zabbix
 
-8. Ahora si vamos a **Monitoring** | **Hosts** y pulsamos en Últimos datos para nuestro host, veremos esto:
+8. Ahora si vamos a **Monitoring** | **Hosts** y pulsamos en **Latest data** para nuestro host, veremos esto:
    ![Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_051.jpg)
    Figura 3.51 - Página de últimos datos de Zabbix para el host lar-book-centos, elementos en la base de datos de Zabbix
 
@@ -780,8 +779,7 @@ Ahora podemos ver directamente desde la base de datos cuántos elementos se han 
 La monitorización de bases de datos de Zabbix funciona conectándose a tu base de datos con el middleware API ODBC. Cualquier base de datos soportada por ODBC puede ser consultada con la monitorización de bases de datos de Zabbix:
 
 ![Figura 3.52 - Diagrama de comunicación entre el servidor Zabbix y ODBC](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_052.jpg)
-
-<p>Figura 3.52 - Diagrama de comunicación entre el servidor Zabbix y ODBC</p>
+Figura 3.52 - Diagrama de comunicación entre el servidor Zabbix y ODBC
 
 Básicamente, su servidor Zabbix envía un comando con, por ejemplo, su consulta MySQL al conector ODBC. Su conector ODBC envía esta consulta a la base de datos a través de la API ODBC, que a su vez devuelve un valor a ODBC. ODBC reenvía el valor al servidor Zabbix y listo: tenemos un valor en nuestro elemento.
 
