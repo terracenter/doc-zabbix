@@ -1,4 +1,4 @@
-****### Capítulo 3: Configuración de la monitorización de Zabbix
+# Capítulo 3: Configuración de la monitorización de Zabbix
 
 Zabbix está construido para ser flexible y debe ser capaz de monitorizar casi cualquier cosa que pueda necesitar. En este capítulo, vamos a aprender más acerca de cómo trabajar con Zabbix para construir un montón de diferentes opciones para la monitorización. Vamos a ir sobre ellos receta por receta, por lo que va a terminar con una sólida comprensión de cómo funcionan. Cubriremos las siguiente**s** recetas sobre los diferentes tipos de monitorización:
 
