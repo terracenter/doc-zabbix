@@ -809,39 +809,32 @@ Vamos a sondear la página web especial que hemos creado para usted mostrando un
 2. Ahora vaya a **item**; queremos crear un nuevo elemento aquí haciendo clic en el botón **Create item**. Vamos a necesitar crear un elemento de agente HTTP como se muestra en la siguiente captura de pantalla:
 
 ![Figura 3.53 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_053.jpg)
-
-<p>Figura 3.53 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com</p>
+Figura 3.53 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com
 
 3. No olvide editar Tipo de información.
 
 ![Figura 3.54 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com, parte inferior de la página](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_054.jpg)
+Figura 3.54 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com, parte inferior de la página
 
-<p>Figura 3.54 - Página de configuración de Zabbix Item, recuento de visitantes en la página oicts.com, parte inferior de la página</p>
 
 4. También necesitaremos añadir una etiqueta a este elemento.
 
 ![Figura 3.55 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Etiquetas](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_055.jpg)
-
-<p>Figura 3.55 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Etiquetas</p>
+Figura 3.55 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Etiquetas
 
 5. Utilice los siguientes pasos de preprocesamiento:
-
 ![Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_056.jpg)
-
-<p>Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento</p>
+Figura 3.56 - Página de configuración de elementos de Zabbix, recuento de visitantes en la página oicts.com, pestaña Preprocesamiento
 
 6. Ahora navegue a **Monitoring** | **Hosts** y abra la página Últimos datos para nuestro host `lar-book-agent_simple`. Si todo está funcionando como debería, ahora deberíamos estar solicitando el recuento de visitantes de esta página cada 15 minutos de la siguiente manera:
-
 ![Figura 3.57 - Página de últimos datos de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_057.jpg)
-
-<p>Figura 3.57 - Página de últimos datos de Zabbix</p>
+Figura 3.57 - Página de últimos datos de Zabbix
 
 ### Cómo funciona...
 
 Lo que hacemos aquí es solicitar la página web completa a Zabbix navegando a la página con el agente HTTP y descargándola. Cuando tenemos el contenido completo de la página, en este caso, una página HTML/PHP, podemos procesar los datos:
 ![Figura 3.58 - Diagrama que muestra la comunicación del agente HTTP de Zabbix](https://static.packt-cdn.com/products/9781803246918/graphics/image/B18275_03_058.jpg)
-
-<p>Figura 3.58 - Diagrama que muestra la comunicación del agente HTTP de Zabbix</p>
+Figura 3.58 - Diagrama que muestra la comunicación del agente HTTP de Zabbix
 
 Le pedimos a nuestro preprocesador mediante una regex que recorra el código solicitado y sólo muestre el número que hay detrás de donde pone Total Page Visits:.
 
