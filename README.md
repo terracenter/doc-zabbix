@@ -17,16 +17,16 @@ Por último, encontrará soluciones rápidas a los problemas comunes y no tan co
 * [Prefacio](https://github.com/terracenter/doc-zabbix-v6/blob/main/00.Prefacio.md)
 * A quién va dirigido este libro
 * De qué trata este libro
-  * Capítulo 1, Instalación de Zabbix y Primeros pasos con el frontend, cubre cómo configurar Zabbix, opcionalmente con HA. También trabajaremos con el frontend de Zabbix.
-  * El capítulo 2, Preparando las cosas con Zabbix User Management, cubre cómo configurar tus primeros usuarios, grupos de usuarios y roles de usuario.
-  * El capítulo 3, Configuración de la monitorización de Zabbix, cubre cómo configurar casi cualquier tipo de monitorización dentro de Zabbix.
-  * En el Capítulo 4, Trabajar con triggers y alertas, se explica cómo configurar triggers y obtener alertas de ellos.
-  * El capítulo 5, Construyendo tus propias plantillas estructuradas, cubre cómo construir plantillas estructuradas, que harán maravillas para mantener tu configuración de Zabbix organizada.
+  * [Capítulo 1](https://github.com/terracenter/doc-zabbix-v6/blob/main/01.%20Cap%C3%ADtulo:%20Instalaci%C3%B3n%20de%20Zabbix%20y%20primeros%20pasos%20con%20el%20frontend.md), Instalación de Zabbix y Primeros pasos con el frontend, cubre cómo configurar Zabbix, opcionalmente con HA. También trabajaremos con el frontend de Zabbix.
+  * Capítulo 2, Preparando las cosas con Zabbix User Management, cubre cómo configurar tus primeros usuarios, grupos de usuarios y roles de usuario.
+  * Capítulo 3, Configuración de la monitorización de Zabbix, cubre cómo configurar casi cualquier tipo de monitorización dentro de Zabbix.
+  * Capítulo 4, Trabajar con triggers y alertas, se explica cómo configurar triggers y obtener alertas de ellos.
+  * Capítulo 5, Construyendo tus propias plantillas estructuradas, cubre cómo construir plantillas estructuradas, que harán maravillas para mantener tu configuración de Zabbix organizada.
   * Capítulo 6, Visualización de Datos, Inventario y Reportes, cubre cómo visualizar datos en gráficos, mapas y tableros. También cubre cómo utilizar el inventario de Zabbix, la presentación de informes, y la funcionalidad de monitorear de servicios de negocio.
-  * El capítulo 7, Uso del descubrimiento para la creación automática, cubre cómo usar el descubrimiento de Zabbix para la creación automática de hosts, así como elementos, triggers y más con agentes, SNMP, WMI y JMX.
-  * El capítulo 8, Configuración de proxies Zabbix, le enseña cómo configurar proxies Zabbix correctamente para su uso en un entorno de producción.
+  * Capítulo 7, Uso del descubrimiento para la creación automática, cubre cómo usar el descubrimiento de Zabbix para la creación automática de hosts, así como elementos, triggers y más con agentes, SNMP, WMI y JMX.
+  * Capítulo 8, Configuración de proxies Zabbix, le enseña cómo configurar proxies Zabbix correctamente para su uso en un entorno de producción.
   * Capítulo 9, Integrando Zabbix con Servicios Externos, le enseña cómo integrar Zabbix con servicios externos para alertas.
-  * El capítulo 10, Extendiendo la funcionalidad de Zabbix con scripts personalizados y la API de Zabbix, cubre cómo extender la funcionalidad de Zabbix usando scripts personalizados y la API de Zabbix.
+  * Capítulo 10, Extendiendo la funcionalidad de Zabbix con scripts personalizados y la API de Zabbix, cubre cómo extender la funcionalidad de Zabbix usando scripts personalizados y la API de Zabbix.
   * Capítulo 11, Manteniendo tu configuración Zabbix, cubre cómo mantener una configuración Zabbix y mantener su rendimiento a lo largo del tiempo.
-  * El capítulo 12, Gestión avanzada de bases de datos Zabbix, le enseña a gestionar bases de datos Zabbix para una configuración avanzada.
+  * Capítulo 12, Gestión avanzada de bases de datos Zabbix, le enseña a gestionar bases de datos Zabbix para una configuración avanzada.
   * Capítulo 13, Llevando Zabbix a la Nube con la Integración de Zabbix en la Nube, cubre cómo usar Zabbix en la nube con servicios como AWS, Azure y Docker.
